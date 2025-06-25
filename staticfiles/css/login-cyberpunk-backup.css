@@ -1,0 +1,174 @@
+/* ========================================
+   RESPALDO - LOGIN DIAGONAL CYBERPUNK 
+   Diseño futurista para proyectos creativos
+======================================== */
+
+/* === RESET GLOBAL === */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box !important;
+}
+
+/* === VARIABLES CYBERPUNK === */
+:root {
+    /* Colores Cyberpunk */
+    --cyber-electric: #00ffff;
+    --cyber-neon-pink: #ff0080;
+    --cyber-purple: #8a2be2;
+    --cyber-dark: #0a0a0a;
+    --cyber-dark-blue: #0d1117;
+    --cyber-matrix: #00ff41;
+    --cyber-orange: #ff4500;
+    --cyber-yellow: #ffff00;
+    --cyber-red: #ff1744;
+    --cyber-blue-glow: #0080ff;
+    
+    /* Efectos */
+    --cyber-glow: 0 0 20px;
+    --cyber-glow-intense: 0 0 40px;
+    --cyber-blur: blur(20px);
+    --cyber-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+}
+
+/* === CONTAINER PRINCIPAL === */
+.login-page {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--cyber-dark);
+    font-family: 'Courier New', 'Monaco', monospace;
+}
+
+/* === LADO IZQUIERDO COMPLETO === */
+.login-branding {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        linear-gradient(135deg, 
+            var(--cyber-dark) 0%,
+            var(--cyber-dark-blue) 20%,
+            var(--cyber-purple) 60%,
+            var(--cyber-neon-pink) 100%
+        );
+    
+    /* DIAGONAL CENTRADA - Solo mostrar lado izquierdo */
+    clip-path: polygon(0 0, 58vw 0, 48vw 100vh, 0 100vh);
+    
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 8vw;
+    z-index: 1;
+}
+
+/* Grid cyberpunk */
+.login-branding::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* === CONTENIDO DEL BRANDING === */
+.branding-content {
+    text-align: center;
+    z-index: 10;
+    position: relative;
+    max-width: 450px;
+    padding: 2rem;
+    margin-right: 4vw;
+}
+
+.branding-logo {
+    margin-bottom: 3rem;
+}
+
+.branding-logo img {
+    width: 160px;
+    height: auto;
+    filter: 
+        drop-shadow(var(--cyber-glow) var(--cyber-electric))
+        brightness(1.2);
+}
+
+.branding-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--cyber-electric);
+    margin-bottom: 1.5rem;
+    text-shadow: 
+        var(--cyber-glow) var(--cyber-electric),
+        var(--cyber-glow) var(--cyber-neon-pink);
+    text-transform: uppercase;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    line-height: 0.9;
+}
+
+.branding-title .highlight {
+    color: var(--cyber-neon-pink);
+    text-shadow: var(--cyber-glow) var(--cyber-neon-pink);
+}
+
+.branding-subtitle {
+    font-size: 1.4rem;
+    color: var(--cyber-matrix);
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: var(--cyber-glow) var(--cyber-matrix);
+}
+
+/* === LADO DERECHO COMPLETO === */
+.login-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        radial-gradient(circle at 70% 30%, var(--cyber-blue-glow) 0%, transparent 60%),
+        radial-gradient(circle at 30% 70%, var(--cyber-purple) 0%, transparent 60%),
+        linear-gradient(225deg, 
+            var(--cyber-dark) 0%,
+            var(--cyber-dark-blue) 50%,
+            var(--cyber-dark) 100%
+        );
+    
+    /* DIAGONAL CENTRADA - Solo mostrar lado derecho */
+    clip-path: polygon(58vw 0, 100vw 0, 100vw 100vh, 48vw 100vh);
+    
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8vw;
+    z-index: 2;
+}
+
+/* Resto del CSS cyberpunk... */
+/* (Incluiría todo el CSS completo aquí en el archivo real) */ 

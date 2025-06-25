@@ -1,0 +1,1017 @@
+/*
+===========================================
+AT&T INVENTORY SYSTEM - LOGIN STYLES
+===========================================
+Estilos específicos para login y auth
+===========================================
+*/
+
+/* ========================================
+   AT&T PORTAL EJECUTIVO DE TELECOMUNICACIONES
+   Diseño Corporativo Profesional Moderno
+======================================== */
+
+/* === RESET Y BASE === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: #f8f9fa;
+    overflow-x: hidden;
+}
+
+/* === NAVBAR TRANSPARENTE AT&T === */
+.att-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(0, 162, 255, 0.034);
+    backdrop-filter: blur(10px);
+    /* border-bottom: 1px solid rgba(0, 162, 255, 0.2); */
+    padding: 0.8rem 2rem;
+    transition: all 0.3s ease;
+    animation: navbarSlideDown 1s ease-out 0.1s both;
+}
+
+@keyframes navbarSlideDown {
+    0% { opacity: 0; transform: translateY(-100%); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    animation: navbarLogoAppear 1s ease-out 0.3s both;
+}
+
+@keyframes navbarLogoAppear {
+    0% { opacity: 0; transform: translateX(-30px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.navbar-logo {
+    height: 32px;
+    width: auto;
+    filter: brightness(1.2) drop-shadow(0 2px 4px rgba(0, 162, 255, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+}
+
+.navbar-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #000000;
+    /* text-shadow: 0 2px 4px rgba(0, 162, 255, 0.3); */
+    letter-spacing: 0.5px;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    animation: navbarItemsAppear 1s ease-out 0.5s both;
+}
+
+@keyframes navbarItemsAppear {
+    0% { opacity: 0; transform: translateX(30px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.navbar-info,
+.navbar-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #00a2ff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-info:hover,
+.navbar-status:hover {
+    opacity: 1;
+}
+
+.navbar-info i,
+.navbar-status i {
+    color: #ff7200;
+    font-size: 1rem;
+}
+
+/* === FOOTER TRANSPARENTE AT&T === */
+.att-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(0, 162, 255, 0.034);
+    backdrop-filter: blur(8px);
+    /* border-top: 1px solid rgba(0, 162, 255, 0.15); */
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+    animation: footerSlideUp 1s ease-out 0.7s both;
+}
+
+@keyframes footerSlideUp {
+    0% { opacity: 0; transform: translateY(100%); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-size: 0.85rem;
+    color: #00a2ff;
+    opacity: 0.8;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: footerLeftAppear 1s ease-out 0.9s both;
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: footerRightAppear 1s ease-out 1.1s both;
+}
+
+@keyframes footerLeftAppear {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes footerRightAppear {
+    0% { opacity: 0; transform: translateX(20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.footer-left i,
+.footer-right i {
+    color: #00c7b2;
+    font-size: 0.9rem;
+}
+
+.footer-right {
+    font-weight: 500;
+}
+
+/* === VARIABLES CORPORATIVAS AT&T === */
+:root {
+    /* Colores Corporativos AT&T */
+    --att-primary: #00a2ff;      /* AT&T Blue - más saturado e intenso */
+    --att-secondary: #ff7200;    /* AT&T Orange */
+    --att-accent: #00c7b2;       /* Teal */
+    --att-navy: #00274c;         /* Navy */
+    --att-light-blue: #65b3f0;   /* Lighter Blue - más saturado */
+    --att-gray: #666666;         /* Gray */
+    --att-light-gray: #f8f9fa;   /* Light Gray */
+    --att-success: #22c55e;      /* Success Green */
+    --att-warning: #f59e0b;      /* Warning Orange */
+    --att-error: #ef4444;        /* Error Red */
+    --att-white: #ffffff;        /* Pure White */
+    --att-dark: #1a1a1a;         /* Dark Text */
+    
+    /* Sombras Profesionales */
+    --shadow-soft: 0 2px 8px rgba(0, 162, 255, 0.08);
+    --shadow-medium: 0 4px 16px rgba(0, 162, 255, 0.12);
+    --shadow-strong: 0 8px 32px rgba(0, 162, 255, 0.16);
+    --shadow-focus: 0 0 0 3px rgba(0, 162, 255, 0.1);
+    
+    /* Transiciones */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    background: var(--att-white);
+    position: relative;
+    overflow: hidden;
+    padding-top: 4rem;    /* Espacio para navbar */
+    padding-bottom: 3rem; /* Espacio para footer */
+}
+
+/* === ANTENAS FLOTANTES DE FONDO === */
+.floating-antenna-1,
+.floating-antenna-2,
+.floating-antenna-3,
+.floating-antenna-4,
+.floating-antenna-5 {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    font-size: 60px;
+    opacity: 0.15;
+}
+
+.floating-antenna-1 {
+    color: #00a2ff;
+    animation: flyDiagonalA 22s linear infinite;
+    animation-delay: -45s;
+}
+
+.floating-antenna-2 {
+    color: #00c7b2;
+    animation: flyDiagonalB 26s linear infinite;
+    animation-delay: -48s;
+}
+
+.floating-antenna-3 {
+    color: #00a2ff;
+    animation: flyDiagonalC 29s linear infinite;
+    animation-delay: -51s;
+}
+
+.floating-antenna-4 {
+    color: #00c7b2;
+    animation: flyDiagonalD 24s linear infinite;
+    animation-delay: -54s;
+}
+
+.floating-antenna-5 {
+    color: #00a2ff;
+    animation: flyDiagonalE 27s linear infinite;
+    animation-delay: -57s;
+}
+
+/* Animaciones antiguas eliminadas - ahora todos usan flyDiagonal */
+
+/* === LADO IZQUIERDO - BRANDING CORPORATIVO === */
+.login-branding {
+    flex: 1;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Patrón sutil eliminado */
+
+/* === CONTENIDO DEL BRANDING === */
+.branding-content {
+    text-align: center;
+    color: var(--att-primary);
+    z-index: 10;
+    position: relative;
+    max-width: 500px;
+}
+
+.branding-logo {
+    margin-bottom: 2.5rem;
+    animation: logoAppear 1s ease-out;
+}
+
+@keyframes logoAppear {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.branding-logo img {
+    width: 140px;
+    height: auto;
+    filter: 
+        drop-shadow(0 4px 12px rgba(0, 162, 255, 0.2))
+        hue-rotate(20deg)
+        saturate(1.2)
+        brightness(1.1);
+    transition: var(--transition-smooth);
+}
+
+.branding-logo img:hover {
+    transform: scale(1.05);
+    filter: 
+        drop-shadow(0 6px 16px rgba(0, 162, 255, 0.3))
+        hue-rotate(20deg)
+        saturate(1.3)
+        brightness(1.15);
+}
+
+/* Icono de Inventario */
+.inventory-icon {
+    font-size: 8rem;
+    color: var(--att-primary);
+    text-shadow: 0 4px 16px rgba(0, 162, 255, 0.3);
+    transition: var(--transition-smooth);
+    display: block;
+    margin: 0 auto;
+}
+
+.inventory-icon:hover {
+    transform: scale(1.1);
+    color: var(--att-secondary);
+    text-shadow: 0 6px 20px rgba(255, 114, 0, 0.4);
+}
+
+.branding-title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    animation: titleSlide 1s ease-out 0.2s both;
+}
+
+@keyframes titleSlide {
+    0% { opacity: 0; transform: translateX(-30px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.branding-title .highlight {
+    color: var(--att-secondary);
+    text-shadow: 0 2px 8px rgba(255, 114, 0, 0.4);
+}
+
+.branding-subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    letter-spacing: 1px;
+    animation: subtitleSlide 1s ease-out 0.4s both;
+}
+
+@keyframes subtitleSlide {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 0.95; transform: translateX(0); }
+}
+
+.branding-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: featuresAppear 1s ease-out 0.6s both;
+}
+
+@keyframes featuresAppear {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: transparent;
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+}
+
+.feature-item:hover {
+    transform: translateX(8px);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--att-accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--att-white);
+    box-shadow: 0 4px 12px rgba(0, 199, 178, 0.3);
+    flex-shrink: 0;
+}
+
+.feature-text {
+    flex: 1;
+}
+
+.feature-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.feature-description {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* === LADO DERECHO - LOGIN EJECUTIVO === */
+.login-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+    background: transparent;
+}
+
+/* === TARJETA DE LOGIN === */
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    animation: cardSlideIn 1s ease-out 0.3s both;
+}
+
+@keyframes cardSlideIn {
+    0% { opacity: 0; transform: translateX(40px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.login-card {
+    background: var(--att-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-strong);
+    overflow: hidden;
+    border: 1px solid rgba(6, 122, 180, 0.1);
+    transition: var(--transition-smooth);
+}
+
+.login-card:hover {
+    box-shadow: 0 12px 48px rgba(6, 122, 180, 0.2);
+    transform: translateY(-4px);
+}
+
+/* === HEADER DEL LOGIN === */
+.login-header {
+    background: linear-gradient(135deg, var(--att-primary), var(--att-light-blue));
+    color: var(--att-white);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.login-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.login-header-logo {
+    height: 32px;
+    width: auto;
+    filter: brightness(1.2) drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.login-header-logo:hover {
+    transform: scale(1.05);
+}
+
+.login-header p {
+    font-size: 1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* === CUERPO DEL LOGIN === */
+.login-body {
+    padding: 2.5rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* === GRUPOS DE INPUT === */
+.form-group {
+    position: relative;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--att-light-blue);
+    font-size: 1.1rem;
+    z-index: 5;
+    transition: var(--transition-smooth);
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e0e7ff;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--att-dark);
+    background: var(--att-white);
+    transition: var(--transition-smooth);
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: var(--att-gray);
+    font-weight: 400;
+}
+
+.form-input:focus {
+    border-color: var(--att-primary);
+    box-shadow: var(--shadow-focus);
+    background: #fafbff;
+}
+
+.form-input:focus ~ .input-icon {
+    color: var(--att-primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* === TOGGLE DE CONTRASEÑA === */
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--att-light-blue);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: var(--att-primary);
+    background: rgba(6, 122, 180, 0.1);
+}
+
+/* === OPCIONES DEL FORMULARIO === */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.5rem 0;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    color: var(--att-dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    background: var(--att-white);
+    border: 2px solid #e0e7ff;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.checkbox-container:hover .checkmark {
+    border-color: var(--att-primary);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background: var(--att-primary);
+    border-color: var(--att-primary);
+}
+
+.checkmark::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 10px;
+    border: solid var(--att-white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: var(--transition-bounce);
+}
+
+.checkbox-container input:checked ~ .checkmark::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.forgot-password {
+    color: var(--att-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+
+.forgot-password:hover {
+    color: var(--att-navy);
+    text-decoration: underline;
+}
+
+/* === BOTÓN DE LOGIN === */
+.login-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--att-primary), var(--att-light-blue));
+    border: none;
+    border-radius: 12px;
+    color: var(--att-white);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-medium);
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(6, 122, 180, 0.3);
+    background: linear-gradient(135deg, var(--att-navy), var(--att-primary));
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+/* === FOOTER DEL LOGIN === */
+.login-footer {
+    padding: 2rem;
+    text-align: center;
+    background: #fafbff;
+    border-top: 1px solid #e0e7ff;
+}
+
+.login-footer p {
+    margin: 0;
+    color: var(--att-gray);
+    font-size: 0.95rem;
+}
+
+.login-footer a {
+    color: var(--att-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+}
+
+.login-footer a:hover {
+    color: var(--att-navy);
+    text-decoration: underline;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .login-page {
+        flex-direction: column;
+    }
+    
+    .login-branding {
+        flex: none;
+        min-height: 40vh;
+        padding: 2rem 1rem;
+    }
+    
+    .branding-title {
+        font-size: 2.5rem;
+    }
+    
+    .branding-features {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+    
+    .feature-item {
+        flex: 1;
+        min-width: 280px;
+    }
+    
+    .login-section {
+        flex: none;
+        padding: 1.5rem;
+    }
+    
+    .login-container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .branding-title {
+        font-size: 2rem;
+    }
+    
+    .branding-features {
+        flex-direction: column;
+    }
+    
+    .feature-item {
+        min-width: auto;
+    }
+    
+    .login-header {
+        padding: 1.5rem;
+    }
+    
+    .login-body {
+        padding: 2rem;
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    /* Navbar y Footer responsivos */
+    .att-navbar {
+        padding: 0.6rem 1rem;
+    }
+    
+    .navbar-content {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .navbar-right {
+        gap: 1rem;
+    }
+    
+    .navbar-info span,
+    .navbar-status span {
+        display: none;
+    }
+    
+    .att-footer {
+        padding: 0.8rem 1rem;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .login-page {
+        padding-top: 5rem;
+        padding-bottom: 4rem;
+    }
+}
+
+/* === ICONOS VOLANDO EN DIAGONAL === */
+.flying-icon {
+    position: absolute;
+    font-size: 40px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+    color: #00a2ff;
+}
+
+/* Lluvia de iconos distribuida por toda la pantalla */
+.flying-icon-1 { animation: flyDiagonal1 25s linear infinite; animation-delay: 0s; }
+.flying-icon-2 { animation: flyDiagonal2 30s linear infinite; animation-delay: -3s; color: #00c7b2; }
+.flying-icon-3 { animation: flyDiagonal3 28s linear infinite; animation-delay: -6s; }
+.flying-icon-4 { animation: flyDiagonal4 26s linear infinite; animation-delay: -9s; color: #00c7b2; }
+.flying-icon-5 { animation: flyDiagonal5 32s linear infinite; animation-delay: -12s; }
+.flying-icon-6 { animation: flyDiagonal6 27s linear infinite; animation-delay: -15s; color: #00c7b2; }
+.flying-icon-7 { animation: flyDiagonal7 29s linear infinite; animation-delay: -18s; }
+.flying-icon-8 { animation: flyDiagonal8 31s linear infinite; animation-delay: -21s; color: #00c7b2; }
+.flying-icon-9 { animation: flyDiagonal9 24s linear infinite; animation-delay: -24s; }
+.flying-icon-10 { animation: flyDiagonal10 33s linear infinite; animation-delay: -27s; color: #00c7b2; }
+.flying-icon-11 { animation: flyDiagonal11 26s linear infinite; animation-delay: -30s; }
+.flying-icon-12 { animation: flyDiagonal12 28s linear infinite; animation-delay: -33s; color: #00c7b2; }
+.flying-icon-13 { animation: flyDiagonal13 30s linear infinite; animation-delay: -36s; }
+.flying-icon-14 { animation: flyDiagonal14 27s linear infinite; animation-delay: -39s; color: #00c7b2; }
+.flying-icon-15 { animation: flyDiagonal15 25s linear infinite; animation-delay: -42s; }
+
+/* === LLUVIA DE ICONOS DIAGONAL === */
+/* Animaciones para antenas originales */
+@keyframes flyDiagonalA {
+    0% { left: -100px; top: calc(100% + 20px); transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(15deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(35deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(55deg) scale(0.9); }
+    100% { left: calc(100% + 100px); top: -50px; transform: rotate(65deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonalB {
+    0% { left: -80px; top: calc(100% + 80px); transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(20deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(40deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(60deg) scale(0.9); }
+    100% { left: calc(100% + 80px); top: -80px; transform: rotate(70deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonalC {
+    0% { left: -120px; top: calc(100% + 150px); transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(10deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(30deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(50deg) scale(0.9); }
+    100% { left: calc(100% + 120px); top: -120px; transform: rotate(60deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonalD {
+    0% { left: -60px; top: calc(100% + 40px); transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(25deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(45deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(65deg) scale(0.9); }
+    100% { left: calc(100% + 60px); top: -60px; transform: rotate(75deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonalE {
+    0% { left: -90px; top: calc(100% + 120px); transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(12deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(32deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(52deg) scale(0.9); }
+    100% { left: calc(100% + 90px); top: -90px; transform: rotate(62deg) scale(0.7); opacity: 0; }
+}
+
+/* Animaciones aleatorias por toda la pantalla */
+@keyframes flyDiagonal1 {
+    0% { left: -50px; top: 80%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(18deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(38deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(58deg) scale(0.9); }
+    100% { left: calc(100% + 50px); top: 10%; transform: rotate(68deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal2 {
+    0% { left: -70px; top: 95%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(22deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(42deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(62deg) scale(0.9); }
+    100% { left: calc(100% + 70px); top: 25%; transform: rotate(72deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal3 {
+    0% { left: -40px; top: 60%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(14deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(34deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(54deg) scale(0.9); }
+    100% { left: calc(100% + 40px); top: 5%; transform: rotate(64deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal4 {
+    0% { left: -110px; top: 110%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(16deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(36deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(56deg) scale(0.9); }
+    100% { left: calc(100% + 110px); top: 45%; transform: rotate(66deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal5 {
+    0% { left: -85px; top: 75%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(20deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(40deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(60deg) scale(0.9); }
+    100% { left: calc(100% + 85px); top: 15%; transform: rotate(70deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal6 {
+    0% { left: -65px; top: 45%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(24deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(44deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(64deg) scale(0.9); }
+    100% { left: calc(100% + 65px); top: 2%; transform: rotate(74deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal7 {
+    0% { left: -95px; top: 85%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(12deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(32deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(52deg) scale(0.9); }
+    100% { left: calc(100% + 95px); top: 35%; transform: rotate(62deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal8 {
+    0% { left: -75px; top: 65%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(28deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(48deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(68deg) scale(0.9); }
+    100% { left: calc(100% + 75px); top: 8%; transform: rotate(78deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal9 {
+    0% { left: -55px; top: 90%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(16deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(36deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(56deg) scale(0.9); }
+    100% { left: calc(100% + 55px); top: 30%; transform: rotate(66deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal10 {
+    0% { left: -105px; top: 55%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(18deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(38deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(58deg) scale(0.9); }
+    100% { left: calc(100% + 105px); top: 12%; transform: rotate(68deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal11 {
+    0% { left: -45px; top: 70%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(22deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(42deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(62deg) scale(0.9); }
+    100% { left: calc(100% + 45px); top: 18%; transform: rotate(72deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal12 {
+    0% { left: -80px; top: 100%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(14deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(34deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(54deg) scale(0.9); }
+    100% { left: calc(100% + 80px); top: 40%; transform: rotate(64deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal13 {
+    0% { left: -60px; top: 50%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(26deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(46deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(66deg) scale(0.9); }
+    100% { left: calc(100% + 60px); top: 6%; transform: rotate(76deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal14 {
+    0% { left: -90px; top: 105%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(10deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(30deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(50deg) scale(0.9); }
+    100% { left: calc(100% + 90px); top: 22%; transform: rotate(60deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes flyDiagonal15 {
+    0% { left: -70px; top: 35%; transform: rotate(0deg) scale(0.8); opacity: 0; }
+    10% { opacity: 0.15; transform: rotate(20deg) scale(1); }
+    50% { opacity: 0.25; transform: rotate(40deg) scale(1.05); }
+    90% { opacity: 0.15; transform: rotate(60deg) scale(0.9); }
+    100% { left: calc(100% + 70px); top: 0%; transform: rotate(70deg) scale(0.7); opacity: 0; }
+} 
