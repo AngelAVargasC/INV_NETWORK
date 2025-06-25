@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal Ejecutivo AT&T - Sistema de Inventario de Telecomunicaciones">
+    <meta name="keywords" content="AT&T, inventario, telecomunicaciones, corporativo, ejecutivo">
+    <meta name="author" content="AT&T Corporation">
+    
+    <title>{% if title %}{{ title }}{% else %}Portal Ejecutivo AT&T - Inventario de Telecomunicaciones{% endif %}</title>
+    
+    <!-- Favicon AT&T -->
+    <link rel="icon" type="image/x-icon" href="{% load static %}{% static 'images/att-favicon.ico' %}">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{% load static %}{% static 'css/login.css' %}" as="style">
+    <link rel="preload" href="{% load static %}{% static 'images/origen_nf_white.png' %}" as="image">
+    
+    <!-- CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    
+    <!-- Font Awesome para iconos profesionales -->
+    <link rel="stylesheet" href="{% static 'fontawesome-free-6.7.2-web/css/all.min.css' %}">
+    
+    <!-- Tipografía local sin dependencias externas -->
+</head>
+
+<body>
+    <!-- Navbar Transparente AT&T -->
+    <nav class="att-navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <img src="{% static 'images/origen_nf.png' %}" alt="AT&T Logo" class="navbar-logo">
+                <span class="navbar-title">AT&T</span>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-info">
+                    <i class="fas fa-globe"></i>
+                    <span>Portal Corporativo</span>
+                </div>
+                <div class="navbar-status">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Conexión Segura</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Portal Ejecutivo AT&T -->
+    <div class="login-page">
+        
+        <!-- Antenas Flotantes de Fondo -->
+        <div class="floating-antenna-1">
+            <i class="fas fa-signal"></i>
+        </div>
+        <div class="floating-antenna-2">
+            <i class="fas fa-wifi"></i>
+        </div>
+        <div class="floating-antenna-3">
+            <i class="fas fa-broadcast-tower"></i>
+        </div>
+        <div class="floating-antenna-4">
+            <i class="fas fa-satellite"></i>
+        </div>
+        <div class="floating-antenna-5">
+            <i class="fas fa-cloud"></i>
+        </div>
+        
+        <!-- Iconos Volando en Diagonal -->
+        <div class="flying-icon flying-icon-1"><i class="fas fa-satellite-dish"></i></div>
+        <div class="flying-icon flying-icon-2"><i class="fas fa-router"></i></div>
+        <div class="flying-icon flying-icon-3"><i class="fas fa-wifi"></i></div>
+        <div class="flying-icon flying-icon-4"><i class="fas fa-signal"></i></div>
+        <div class="flying-icon flying-icon-5"><i class="fas fa-antenna"></i></div>
+        <div class="flying-icon flying-icon-6"><i class="fas fa-broadcast-tower"></i></div>
+        <div class="flying-icon flying-icon-7"><i class="fas fa-satellite"></i></div>
+        <div class="flying-icon flying-icon-8"><i class="fas fa-network-wired"></i></div>
+        <div class="flying-icon flying-icon-9"><i class="fas fa-cloud"></i></div>
+        <div class="flying-icon flying-icon-10"><i class="fas fa-server"></i></div>
+        <div class="flying-icon flying-icon-11"><i class="fas fa-mobile-alt"></i></div>
+        <div class="flying-icon flying-icon-12"><i class="fas fa-laptop"></i></div>
+        <div class="flying-icon flying-icon-13"><i class="fas fa-tablet-alt"></i></div>
+        <div class="flying-icon flying-icon-14"><i class="fas fa-desktop"></i></div>
+        <div class="flying-icon flying-icon-15"><i class="fas fa-ethernet"></i></div>
+        
+        <!-- === LADO IZQUIERDO - BRANDING CORPORATIVO === -->
+        <div class="login-branding">
+            <div class="branding-content">
+                
+                <!-- Icono de Inventario -->
+                <div class="branding-logo">
+                    <i class="fas fa-warehouse inventory-icon"></i>
+                </div>
+                
+                <!-- Título Corporativo -->
+                <h1 class="branding-title">
+                    Inventario 
+                    <span class="highlight">Network</span>
+                </h1>
+                
+                <!-- Subtítulo Ejecutivo -->
+                <h2 class="branding-subtitle">Portal Ejecutivo de Telecomunicaciones</h2>
+                
+                <!-- Features Corporativas -->
+                <div class="branding-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Gestión de Inventario</div>
+                            <div class="feature-description">Control centralizado de inventario</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Analytics Avanzado</div>
+                            <div class="feature-description">Reportes ejecutivos en tiempo real</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <div class="feature-title">Seguridad Empresarial</div>
+                            <div class="feature-description">Acceso protegido nivel corporativo</div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- === LADO DERECHO - LOGIN EJECUTIVO === -->
+        <div class="login-section">
+            <div class="login-container">
+                
+                <!-- Tarjeta de Login Ejecutiva -->
+                <div class="login-card">
+                    
+                    <!-- Header del Login -->
+                    <div class="login-header">
+                        <h2>
+                            <img src="{% static 'images/origen_nf_white.png' %}" alt="AT&T Logo" class="login-header-logo">
+                            Inicio de Sesión
+                        </h2>
+                        <p>
+                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                            Portal Corporativo AT&T
+                        </p>
+                    </div>
+                    
+                    <!-- Cuerpo del Login -->
+                    <div class="login-body">
+                        
+                        <!-- Mensajes del Sistema -->
+                        {% if messages %}
+                            <div class="login-messages" style="margin-bottom: 2rem;">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}" style="padding: 1rem; border-radius: 8px; margin-bottom: 1rem; 
+                                         background: {% if message.tags == 'error' %}#fef2f2; border-left: 4px solid #ef4444; color: #dc2626;{% elif message.tags == 'success' %}#f0fdf4; border-left: 4px solid #22c55e; color: #16a34a;{% else %}#eff6ff; border-left: 4px solid #3b82f6; color: #2563eb;{% endif %}">
+                                        {% if message.tags == 'error' %}
+                                            <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                                        {% elif message.tags == 'success' %}
+                                            <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                                        {% else %}
+                                            <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                                        {% endif %}
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Formulario de Login Ejecutivo -->
+                        <form method="post" class="login-form" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Campo Usuario -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="input-icon fas fa-user"></i>
+                                    <input type="text" 
+                                           id="id_username" 
+                                           name="username" 
+                                           class="form-input"
+                                           placeholder="Usuario corporativo"
+                                           autocomplete="username"
+                                           required
+                                           value="{% if form.username.value %}{{ form.username.value }}{% endif %}">
+                                </div>
+                                {% if form.username.errors %}
+                                    <div class="field-errors" style="margin-top: 0.5rem;">
+                                        {% for error in form.username.errors %}
+                                            <span style="color: #ef4444; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                                {{ error }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Campo Contraseña -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="input-icon fas fa-lock"></i>
+                                    <input type="password" 
+                                           id="id_password" 
+                                           name="password" 
+                                           class="form-input"
+                                           placeholder="Contraseña corporativa"
+                                           autocomplete="current-password"
+                                           required>
+                                    <button type="button" class="password-toggle" aria-label="Mostrar contraseña">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                {% if form.password.errors %}
+                                    <div class="field-errors" style="margin-top: 0.5rem;">
+                                        {% for error in form.password.errors %}
+                                            <span style="color: #ef4444; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                                {{ error }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Opciones del Formulario -->
+                            <div class="form-options">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" name="remember_me" id="id_remember_me">
+                                    <span class="checkmark"></span>
+                                    <span>Mantener sesión activa</span>
+                                </label>
+                                
+                                <a href="#" class="forgot-password">
+                                    <i class="fas fa-question-circle" style="margin-right: 5px;"></i>
+                                    ¿Olvidó su contraseña?
+                                </a>
+                            </div>
+                            
+                            <!-- Botón de Login -->
+                            <button type="submit" class="login-btn" id="login-button">
+                                Acceder al Portal
+                            </button>
+                            
+                        </form>
+                    </div>
+                    
+                    <!-- Footer del Login -->
+                    <div class="login-footer">
+                        <p>
+                            <i class="fas fa-users" style="margin-right: 5px;"></i>
+                            ¿Necesita acceso? 
+                            <a href="{% url 'usuarios:registro' %}">
+                                <i class="fas fa-user-plus" style="margin-left: 5px;"></i>
+                                Solicitar Credenciales
+                            </a>
+                        </p>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Footer Transparente AT&T -->
+    <footer class="att-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <i class="fas fa-copyright" style="color: #ff7200;"></i>
+                <span>2025 AT&T Corporation. Todos los derechos reservados.</span>
+            </div>
+            <div class="footer-right">
+                <span>Portal Ejecutivo v2.1</span>
+                <i class="fas fa-building" style="color: #ff7200;"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript para funcionalidad ejecutiva -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password toggle functionality
+            const passwordToggle = document.querySelector('.password-toggle');
+            const passwordInput = document.querySelector('#id_password');
+            
+            if (passwordToggle && passwordInput) {
+                passwordToggle.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    const icon = this.querySelector('i');
+                    if (type === 'password') {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                        this.setAttribute('aria-label', 'Mostrar contraseña');
+                    } else {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                        this.setAttribute('aria-label', 'Ocultar contraseña');
+                    }
+                });
+            }
+            
+            // Form validation
+            const form = document.querySelector('.login-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const username = document.querySelector('#id_username').value.trim();
+                    const password = document.querySelector('#id_password').value.trim();
+                    
+                    if (!username || !password) {
+                        e.preventDefault();
+                        
+                        // Crear mensaje de error elegante
+                        const errorDiv = document.createElement('div');
+                        errorDiv.innerHTML = `
+                            <div style="background: #fef2f2; border-left: 4px solid #ef4444; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                                Por favor, complete todos los campos requeridos.
+                            </div>
+                        `;
+                        
+                        const loginBody = document.querySelector('.login-body');
+                        const existingError = loginBody.querySelector('.temp-error');
+                        if (existingError) existingError.remove();
+                        
+                        errorDiv.className = 'temp-error';
+                        loginBody.insertBefore(errorDiv, loginBody.firstChild);
+                        
+                        return false;
+                    }
+                });
+            }
+            
+            // Input focus effects
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+            
+            // Smooth scroll for mobile
+            if (window.innerWidth <= 768) {
+                const loginSection = document.querySelector('.login-section');
+                if (loginSection) {
+                    setTimeout(() => {
+                        loginSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 500);
+                }
+            }
+            
+            console.log('🏢 AT&T Portal Ejecutivo Iniciado');
+        });
+    </script>
+    
+</body>
+</html> 

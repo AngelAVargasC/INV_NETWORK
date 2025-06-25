@@ -1,0 +1,901 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ articulo.id_pmo }} - Detalle del Artículo{% endblock %}
+
+{% block extra_css %}
+<style>
+.article-header {
+    background: linear-gradient(135deg, #00a2ff 100%);
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.article-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.article-subtitle {
+    opacity: 0.9;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.btn-group-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-modern {
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-modern-primary {
+    background: linear-gradient(135deg, #00a2ff, #0066cc);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 162, 255, 0.3);
+}
+
+.btn-modern-secondary {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+}
+
+.btn-modern-outline {
+    background: white;
+    color: #00a2ff;
+    border: 2px solid #00a2ff;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-modern-outline:hover {
+    background: #00a2ff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 162, 255, 0.3);
+    text-decoration: none;
+}
+
+.btn-modern-outline:focus,
+.btn-modern:focus,
+.btn-modern-gray:focus {
+    text-decoration: none;
+    outline: none;
+}
+
+.btn-modern-gray {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-modern-gray:hover {
+    background: #545b62;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    color: white;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-modern-primary:hover {
+    box-shadow: 0 6px 20px rgba(0, 162, 255, 0.4);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .btn-group-actions {
+        flex-direction: column;
+    }
+}
+
+.info-card {
+    background: white;
+    border-radius: 15px;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.info-card-header {
+    background: linear-gradient(135deg, #00a2ff, #0066cc);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.info-card-body {
+    padding: 1.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 150px;
+}
+
+.detail-value {
+    color: #666;
+    text-align: right;
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.badge-custom {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: white;
+    display: inline-block;
+}
+
+.timeline-section {
+    position: relative;
+    padding: 1rem 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 1rem 0 1rem 2.5rem;
+    border-left: 2px solid rgba(0,162,255,0.3);
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -6px;
+    top: 1.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #00a2ff;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.modal-modern .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-modern .modal-header {
+    background: linear-gradient(135deg, #00a2ff, #0066cc);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.25rem 1.5rem;
+}
+
+.section-title {
+    color: #00a2ff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0, 162, 255, 0.2);
+}
+
+.description-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border-left: 4px solid #00a2ff;
+    margin-top: 1rem;
+}
+
+.status-success { background: #28a745; }
+.status-warning { background: #ffc107; color: #333; }
+.status-danger { background: #dc3545; }
+.status-info { background: #17a2b8; }
+.status-secondary { background: #6c757d; }
+.status-primary { background: #007bff; }
+
+.money-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.form-control-wrapper .form-control {
+    border-radius: 8px;
+    border: 2px solid rgba(0, 162, 255, 0.2);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control-wrapper .form-control:focus {
+    border-color: #00a2ff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 162, 255, 0.25);
+}
+
+.modal-footer.gap-3 {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Estilos para campos del formulario en modal */
+#cambioEstatusModal input[type="text"],
+#cambioEstatusModal textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(0, 162, 255, 0.2);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+#cambioEstatusModal input[type="text"]:focus,
+#cambioEstatusModal textarea:focus {
+    outline: none;
+    border-color: #00a2ff;
+    box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+}
+
+#cambioEstatusModal textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header del Artículo -->
+    <div class="article-header">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="article-title">
+                    <i class="fas fa-cube me-3"></i>
+                    {{ articulo.id_pmo|default:"Sin código PMO" }}
+        </h1>
+                <p class="article-subtitle mb-0">
+                    {{ articulo.nombre_proyecto|default:articulo.articulo|default:"Sin nombre de proyecto especificado" }}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="btn-group-actions justify-content-lg-end align-items-center">
+                    <a href="{% url 'inventario:articulo_list' %}" class="btn btn-modern btn-modern-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Volver
+                </a>
+                    <a href="{% url 'inventario:articulo_update' articulo.pk %}" class="btn btn-modern btn-modern-primary">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Columna Principal -->
+        <div>
+            <!-- Información General -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-info-circle"></i>
+                    Información General del Artículo
+                </div>
+                <div class="info-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="section-title">Datos Básicos</h6>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-hashtag text-primary"></i>
+                                    ID PMO
+                                </span>
+                                <span class="detail-value">
+                                    <strong>{{ articulo.id_pmo|default:"N/A" }}</strong>
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-box text-primary"></i>
+                                    Artículo
+                                </span>
+                                <span class="detail-value">
+                                    {{ articulo.articulo|default:"N/A" }}
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                    Año
+                                </span>
+                                <span class="detail-value">
+                                    <span class="badge-custom status-primary">{{ articulo.año|default:"N/A" }}</span>
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-industry text-primary"></i>
+                                    Fábrica
+                                </span>
+                                <span class="detail-value">
+                                    <span class="badge-custom status-info">{{ articulo.fabrica_texto|default:"N/A" }}</span>
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-tags text-primary"></i>
+                                    Tipo
+                                </span>
+                                <span class="detail-value">
+                                    <span class="badge-custom status-success">{{ articulo.tipo|default:"N/A" }}</span>
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-truck text-primary"></i>
+                                    Proveedor
+                                </span>
+                                <span class="detail-value">
+                                    {{ articulo.proveedor|default:"N/A" }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="section-title">Estado y Gestión</h6>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-flag text-primary"></i>
+                                    Estado PMO
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.estatus_pmo %}
+                                        <span class="badge-custom" style="background-color: {{ articulo.estatus_pmo.color|default:'#6c757d' }};">
+                                            {{ articulo.estatus_pmo.get_estado_display }}
+                                        </span>
+                                    {% elif articulo.estatus_pmo_texto %}
+                                        <span class="badge-custom status-secondary">{{ articulo.estatus_pmo_texto }}</span>
+                                    {% else %}
+                                        <span class="badge-custom status-secondary">Sin estado</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-user-tie text-primary"></i>
+                                    Program Manager
+                                </span>
+                                <span class="detail-value">
+                                    {{ articulo.program_manager|default:"N/A" }}
+                                </span>
+                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-building text-primary"></i>
+                                    AVP
+                                </span>
+                                <span class="detail-value">
+                                    {{ articulo.avp|default:"N/A" }}
+                                </span>
+                                            </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-receipt text-primary"></i>
+                                    Orden de Compra
+                                </span>
+                                <span class="detail-value">
+                                    <code class="bg-light text-primary px-2 py-1 rounded">{{ articulo.orden_compra|default:"N/A" }}</code>
+                                </span>
+                                        </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-calendar-check text-primary"></i>
+                                    Implementación
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.fecha_implementacion %}
+                                        <span class="badge-custom status-success">{{ articulo.fecha_implementacion }}</span>
+                                    {% else %}
+                                        <span class="text-muted">No definida</span>
+                                {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if articulo.descripcion %}
+                    <div class="description-box">
+                        <h6 class="text-primary mb-2">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Descripción
+                        </h6>
+                        <p class="mb-0" style="line-height: 1.6;">{{ articulo.descripcion }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if articulo.nombre_proyecto_recibo %}
+                    <div class="description-box">
+                        <h6 class="text-info mb-2">
+                            <i class="fas fa-project-diagram me-2"></i>
+                            Proyecto de Recibo
+                        </h6>
+                        <p class="mb-0" style="line-height: 1.6;">{{ articulo.nombre_proyecto_recibo }}</p>
+                    </div>
+                    {% endif %}
+            </div>
+        </div>
+
+            <!-- Información Financiera y de Inventario -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-chart-line"></i>
+                    Información Financiera y de Inventario
+                </div>
+                <div class="info-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="section-title">Costos</h6>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-dollar-sign text-success"></i>
+                                    Costo Unitario
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.costo_unitario_distribucion %}
+                                        <span class="money-value text-success">${{ articulo.costo_unitario_distribucion|floatformat:2 }} MXN</span>
+                        {% else %}
+                                        <span class="text-muted">No definido</span>
+                        {% endif %}
+                                </span>
+                    </div>
+                    
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-money-bill text-primary"></i>
+                                    Costo Salida
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.costo_salida_mxn %}
+                                        <span class="money-value text-primary">${{ articulo.costo_salida_mxn|floatformat:2 }} MXN</span>
+                        {% else %}
+                                        <span class="text-muted">No definido</span>
+                        {% endif %}
+                                </span>
+                    </div>
+                    
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-coins text-warning"></i>
+                                    Existencias MXN
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.costo_mxn_existencias %}
+                                        <span class="money-value text-warning">${{ articulo.costo_mxn_existencias|floatformat:2 }} MXN</span>
+                        {% else %}
+                                        <span class="text-muted">No definido</span>
+                        {% endif %}
+                                </span>
+                    </div>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-dollar-sign text-info"></i>
+                                    Existencias USD
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.costo_usd_existencias %}
+                                        <span class="money-value text-info">${{ articulo.costo_usd_existencias|floatformat:2 }} USD</span>
+                                    {% else %}
+                                        <span class="text-muted">No definido</span>
+                                    {% endif %}
+                                </span>
+                </div>
+            </div>
+
+                        <div class="col-md-6">
+                            <h6 class="section-title">Cantidades</h6>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-shipping-fast text-primary"></i>
+                                    Cantidad Embarcada
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.cantidad_embarcada %}
+                                        <strong class="text-primary">{{ articulo.cantidad_embarcada|floatformat:0 }} unidades</strong>
+                        {% else %}
+                            <span class="text-muted">No definido</span>
+                        {% endif %}
+                                </span>
+                    </div>
+                    
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    <i class="fas fa-warehouse text-success"></i>
+                                    Existencia Actual
+                                </span>
+                                <span class="detail-value">
+                                    {% if articulo.existencia_actual %}
+                                        <strong class="text-success">{{ articulo.existencia_actual|floatformat:0 }} unidades</strong>
+                        {% else %}
+                            <span class="text-muted">No definido</span>
+                        {% endif %}
+                                </span>
+                            </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial y Observaciones -->
+            {% if articulo.historial or articulo.observaciones or articulo.retrasos_salida %}
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-history"></i>
+                    Historial y Observaciones
+                </div>
+                <div class="info-card-body">
+                    {% if articulo.historial %}
+                    <div class="description-box">
+                        <h6 class="text-primary mb-2">
+                            <i class="fas fa-clock me-2"></i>
+                            Historial
+                        </h6>
+                        <p class="mb-0" style="line-height: 1.6;">{{ articulo.historial }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if articulo.observaciones %}
+                    <div class="description-box">
+                        <h6 class="text-warning mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Observaciones
+                        </h6>
+                        <p class="mb-0" style="line-height: 1.6;">{{ articulo.observaciones }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if articulo.retrasos_salida %}
+                    <div class="description-box">
+                        <h6 class="text-danger mb-2">
+                            <i class="fas fa-clock me-2"></i>
+                            Retrasos en Salida
+                        </h6>
+                        <p class="mb-0" style="line-height: 1.6;">{{ articulo.retrasos_salida }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Seguimientos del Sistema -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-tasks"></i>
+                    Seguimientos del Sistema
+                </div>
+                <div class="info-card-body">
+                    {% if seguimientos %}
+                        <div class="timeline-section">
+                        {% for seguimiento in seguimientos %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">
+                                            Cambio de estado
+                                    </h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ seguimiento.fecha_cambio|date:"d/m/Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-2">
+                                        <span class="badge-custom status-secondary">{{ seguimiento.estatus_anterior.get_estado_display|default:"Estado anterior" }}</span>
+                                        <i class="fas fa-arrow-right mx-2 text-primary"></i>
+                                        <span class="badge-custom" style="background-color: {{ seguimiento.estatus_nuevo.color|default:'#00a2ff' }};">{{ seguimiento.estatus_nuevo.get_estado_display|default:"Nuevo estado" }}</span>
+                                    </p>
+                                    {% if seguimiento.comentarios %}
+                                    <p class="mb-2">{{ seguimiento.comentarios }}</p>
+                                    {% endif %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>
+                                        {{ seguimiento.usuario.get_full_name|default:seguimiento.usuario.username }}
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <h6>No hay seguimientos del sistema</h6>
+                            <p class="mb-0">Los cambios de estado aparecerán aquí</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div>
+            <!-- Acciones Rápidas -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-bolt"></i>
+                    Acciones Rápidas
+                </div>
+                <div class="info-card-body">
+                    <div style="display: grid; gap: 1rem;">
+                        <button type="button" class="btn-modern btn-modern-primary" style="width: 100%;" onclick="document.getElementById('cambioEstatusModal').style.display='flex'">
+                            <i class="fas fa-exchange-alt"></i>
+                            Cambiar Estado
+                        </button>
+                        <a href="{% url 'inventario:articulo_update' articulo.pk %}" class="btn-modern-outline" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-edit"></i>
+                            Editar Información
+                        </a>
+                        <button type="button" class="btn-modern-gray" style="width: 100%;" onclick="window.print()">
+                            <i class="fas fa-print"></i>
+                            Imprimir Detalle
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen Ejecutivo -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fas fa-chart-pie"></i>
+                    Resumen Ejecutivo
+                </div>
+                <div class="info-card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-calendar text-primary"></i>
+                            Año de Proyecto
+                        </span>
+                        <span class="detail-value">
+                            <strong>{{ articulo.año }}</strong>
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-industry text-primary"></i>
+                            Ubicación
+                        </span>
+                        <span class="detail-value">
+                            {{ articulo.fabrica_texto|default:"No especificada" }}
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-user-check text-primary"></i>
+                            Responsable
+                        </span>
+                        <span class="detail-value">
+                            {{ articulo.program_manager|default:"No asignado" }}
+                        </span>
+                    </div>
+
+                    {% if articulo.costo_unitario_distribucion %}
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-money-bill-wave text-success"></i>
+                            Valor Unitario
+                        </span>
+                        <span class="detail-value">
+                            <span class="money-value text-success">${{ articulo.costo_unitario_distribucion|floatformat:2 }}</span>
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    {% if articulo.cantidad_embarcada %}
+                    <div class="detail-row">
+                        <span class="detail-label">
+                            <i class="fas fa-boxes text-info"></i>
+                            Unidades
+                        </span>
+                        <span class="detail-value">
+                            <strong class="text-info">{{ articulo.cantidad_embarcada|floatformat:0 }}</strong>
+                        </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cambio de estado -->
+<div class="modal fade" id="cambioEstatusModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 15px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden;">
+            <form method="post" action="{% url 'inventario:cambiar_estatus' articulo.pk %}">
+                {% csrf_token %}
+                <!-- Header del Modal -->
+                <div style="background: linear-gradient(135deg, #00a2ff, #0066cc); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h5 style="margin: 0; font-size: 1.2rem; font-weight: 600;">
+                        <i class="fas fa-exchange-alt" style="margin-right: 0.5rem;"></i>
+                        Cambiar Estado del Artículo
+                    </h5>
+                    <button type="button" onclick="document.getElementById('cambioEstatusModal').style.display='none'" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Cuerpo del Modal -->
+                <div style="padding: 2rem;">
+                    <!-- Estado Actual -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                            <i class="fas fa-flag" style="margin-right: 0.5rem; color: #00a2ff;"></i>
+                            Estado Actual:
+                        </label>
+                        <div>
+                            {% if articulo.estatus_pmo %}
+                                <span class="badge-custom" style="background-color: {{ articulo.estatus_pmo.color|default:'#6c757d' }};">
+                                    {{ articulo.estatus_pmo.get_estado_display }}
+                        </span>
+                            {% elif articulo.estatus_pmo_texto %}
+                                <span class="badge-custom status-secondary">{{ articulo.estatus_pmo_texto }}</span>
+                            {% else %}
+                                <span class="badge-custom status-secondary">Sin estado</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Nuevo Estado -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="{{ cambio_estatus_form.nuevo_estatus.id_for_label }}" style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                            <i class="fas fa-flag-checkered" style="margin-right: 0.5rem; color: #00a2ff;"></i>
+                            Nuevo Estado
+                        </label>
+                        <div style="position: relative;">
+                        {{ cambio_estatus_form.nuevo_estatus }}
+                        </div>
+                    </div>
+                    
+                    <!-- Observaciones -->
+                    <div style="margin-bottom: 1rem;">
+                        <label for="{{ cambio_estatus_form.observaciones.id_for_label }}" style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                            <i class="fas fa-comment" style="margin-right: 0.5rem; color: #00a2ff;"></i>
+                            Observaciones
+                        </label>
+                        <div style="position: relative;">
+                            {{ cambio_estatus_form.observaciones }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer del Modal -->
+                <div style="padding: 1.5rem 2rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem; background: #f8f9fa;">
+                    <button type="button" class="btn-modern-gray" onclick="document.getElementById('cambioEstatusModal').style.display='none'">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-modern btn-modern-primary">
+                        <i class="fas fa-check"></i>
+                        Cambiar Estado
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación del formulario de cambio de estado
+    const cambioForm = document.querySelector('#cambioEstatusModal form');
+    if (cambioForm) {
+        cambioForm.addEventListener('submit', function(e) {
+            const nuevoEstatus = this.querySelector('input[name="nuevo_estatus"]');
+            if (!nuevoEstatus || !nuevoEstatus.value.trim()) {
+                e.preventDefault();
+                alert('Por favor ingresa un nuevo estado.');
+                if (nuevoEstatus) nuevoEstatus.focus();
+}
+        });
+    }
+});
+</script>
+{% endblock %} 

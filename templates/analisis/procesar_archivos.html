@@ -1,0 +1,898 @@
+{% extends 'base.html' %}
+
+{% block title %}Procesar Archivos - Análisis{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --att-blue: #00a8cc;
+    --att-dark-blue: #0066cc;
+    --att-light-blue: #e6f7ff;
+    --att-orange: #ff6600;
+    --att-gray: #6c757d;
+    --att-light-gray: #f8f9fa;
+    --att-white: #ffffff;
+    --att-success: #28a745;
+    --att-warning: #ffc107;
+    --att-danger: #dc3545;
+    --sidebar-blue: #1a73e8; /* Color azul del sidebar */
+}
+
+.procesar-container {
+    padding: 2rem;
+    background: var(--att-light-gray);
+    min-height: 100vh;
+    margin-top: 0px; /* Espacio para el navbar */
+}
+
+.page-header {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sidebar-blue), var(--att-blue), var(--att-dark-blue));
+}
+
+.page-header h1 {
+    color: var(--att-dark-blue);
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+
+.page-header p {
+    color: var(--att-gray);
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+.upload-card {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 3rem;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid #e9ecef;
+}
+
+.files-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: start;
+}
+
+.file-section:nth-child(1) {
+    grid-column: span 2 !important;
+}
+
+.file-section {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.file-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #dee2e6, #e9ecef);
+    transition: all 0.3s ease;
+}
+
+.file-section:hover {
+    border-color: var(--sidebar-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(26, 115, 232, 0.15);
+}
+
+.file-section:hover::before {
+    background: linear-gradient(90deg, var(--sidebar-blue), var(--att-blue));
+}
+
+.file-section.has-file {
+    border-color: var(--att-success);
+    background: linear-gradient(135deg, #d4edda, #ffffff);
+}
+
+.file-section.has-file::before {
+    background: linear-gradient(90deg, var(--att-success), #20c997);
+}
+
+.file-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.file-section h5 {
+    color: var(--att-dark-blue);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.file-section p {
+    color: var(--att-gray);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.submit-section {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.btn-procesar {
+    background: linear-gradient(135deg, var(--sidebar-blue), var(--att-dark-blue));
+    color: var(--att-white);
+    border: none;
+    padding: 1.5rem 4rem;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-procesar:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.4);
+    background: linear-gradient(135deg, var(--att-dark-blue), #0052cc);
+}
+
+.btn-procesar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-back {
+    background: linear-gradient(135deg, var(--att-white), #f8f9fa);
+    color: var(--att-dark-blue);
+    border: 2px solid var(--sidebar-blue);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(26, 115, 232, 0.15);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-back::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(26, 115, 232, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-back:hover::before {
+    left: 100%;
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, var(--att-light-blue), #e3f2fd);
+    color: var(--att-dark-blue);
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.25);
+    border-color: var(--att-blue);
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    padding: 1.2rem 1.8rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: var(--att-danger);
+    border-left: 4px solid var(--att-danger);
+}
+
+.text-danger {
+    color: var(--att-danger) !important;
+    font-size: 0.9rem;
+    margin-top: 0.8rem;
+    display: block;
+    font-weight: 500;
+}
+
+.requirements-button {
+    background: linear-gradient(135deg, var(--sidebar-blue), var(--att-blue));
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+    margin-bottom: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.requirements-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
+    background: linear-gradient(135deg, var(--att-dark-blue), #0052cc);
+}
+
+/* Modal para requisitos */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1055;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.3s ease;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.9);
+    animation: slideInModal 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInModal {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.modal-header h5 {
+    color: var(--att-dark-blue);
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--att-gray);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close:hover {
+    background: #f8f9fa;
+    color: var(--att-danger);
+    transform: scale(1.1);
+}
+
+.modal-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+
+.requirement-section {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.requirement-section h6 {
+    color: var(--att-dark-blue);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.requirement-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirement-list li {
+    padding: 0.5rem 0;
+    color: var(--att-gray);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.requirement-list li i {
+    color: var(--att-success);
+    margin-right: 0.8rem;
+    width: 16px;
+}
+
+/* Progress bar para mostrar progreso de subida */
+.upload-progress {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 1rem;
+    display: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sidebar-blue), var(--att-blue), var(--att-dark-blue));
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .files-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    
+    .file-section:nth-child(3) {
+        grid-column: 1;
+        max-width: none;
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .procesar-container {
+        padding: 1rem;
+        margin-top: 50px;
+    }
+    
+    .btn-back {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .upload-card {
+        padding: 2rem;
+    }
+    
+    .page-header {
+        padding: 2rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .page-header p {
+        font-size: 1.1rem;
+    }
+    
+    .info-card {
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-card h6 {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .files-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .file-section {
+        padding: 2rem;
+    }
+    
+    .file-section h5 {
+        font-size: 1.1rem;
+    }
+    
+    .btn-procesar {
+        width: 100%;
+        padding: 1.2rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .submit-section {
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .requirements-button {
+        width: 100%;
+        justify-content: center;
+        padding: 1.2rem 2rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 2rem;
+        max-height: 90vh;
+    }
+    
+    .modal-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Estilos adicionales para inputs */
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 1rem 1.2rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.form-control:focus {
+    border-color: var(--sidebar-blue);
+    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.15);
+    outline: none;
+}
+
+.file-section input[type="file"] {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-section input[type="file"]:hover {
+    border-color: var(--sidebar-blue);
+    background: var(--att-light-blue);
+}
+
+.processing-note {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-radius: 12px;
+    border: 1px solid #f6c343;
+    box-shadow: 0 4px 15px rgba(246, 195, 67, 0.2);
+}
+
+.processing-note small {
+    color: #856404;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.requirements-button {
+    animation: slideInFromLeft 0.7s ease forwards;
+    animation-delay: 0.1s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.upload-card {
+    animation: fadeInUp 0.8s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.file-section:nth-child(1) { 
+    animation: slideInFromLeft 0.6s ease forwards;
+    animation-delay: 0.3s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.file-section:nth-child(2) { 
+    animation: fadeInUp 0.6s ease forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.file-section:nth-child(3) { 
+    animation: slideInFromRight 0.6s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.submit-section {
+    animation: fadeInUp 0.6s ease forwards;
+    animation-delay: 0.6s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="procesar-container">
+    <a href="{% url 'analisis:dashboard' %}" class="btn-back">
+        <i class="fas fa-arrow-left"></i>Volver al Dashboard
+    </a>
+
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-cloud-upload-alt me-3"></i>
+            Procesar Archivos de Análisis
+        </h1>
+        <p>
+            Sube los tres archivos necesarios para el análisis de inventario AT&T
+        </p>
+    </div>
+
+    <div class="upload-card">
+        <!-- Botón de Requisitos -->
+        <button class="requirements-button" onclick="showRequirementsModal()">
+            <i class="fas fa-info-circle"></i>
+            Ver Requisitos de Archivos
+        </button>
+
+        <form method="post" enctype="multipart/form-data" id="procesarForm">
+            {% csrf_token %}
+            
+            <!-- Grid de archivos -->
+            <div class="files-grid">
+                <!-- Archivo Aging -->
+                <div class="file-section" id="aging-section">
+                    <div class="file-section-header">
+                        <h5><i class="fas fa-chart-line me-2"></i>Archivo Aging de Inventario</h5>
+                        <p>
+                            Archivo principal con el detalle del aging de inventario
+                        </p>
+                    </div>
+                    {{ form.archivo_aging }}
+                    {% if form.archivo_aging.help_text %}
+                        <small class="text-muted d-block mt-2">{{ form.archivo_aging.help_text }}</small>
+                    {% endif %}
+                    {% if form.archivo_aging.errors %}
+                        <div class="text-danger">
+                            {% for error in form.archivo_aging.errors %}
+                                <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="upload-progress">
+                        <div class="upload-progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Archivo Pipeline -->
+                <div class="file-section" id="pipeline-section">
+                    <div class="file-section-header">
+                        <h5><i class="fas fa-project-diagram me-2"></i>Archivo Pipeline 2025</h5>
+                        <p>
+                            Archivo con información del pipeline de proyectos 2025
+                        </p>
+                    </div>
+                    {{ form.archivo_pipeline }}
+                    {% if form.archivo_pipeline.help_text %}
+                        <small class="text-muted d-block mt-2">{{ form.archivo_pipeline.help_text }}</small>
+                    {% endif %}
+                    {% if form.archivo_pipeline.errors %}
+                        <div class="text-danger">
+                            {% for error in form.archivo_pipeline.errors %}
+                                <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="upload-progress">
+                        <div class="upload-progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Archivo Oracle -->
+                <div class="file-section" id="oracle-section">
+                    <div class="file-section-header">
+                        <h5><i class="fas fa-database me-2"></i>Archivo Oracle</h5>
+                        <p>
+                            Archivo con datos adicionales de Oracle
+                        </p>
+                    </div>
+                    {{ form.archivo_oracle }}
+                    {% if form.archivo_oracle.help_text %}
+                        <small class="text-muted d-block mt-2">{{ form.archivo_oracle.help_text }}</small>
+                    {% endif %}
+                    {% if form.archivo_oracle.errors %}
+                        <div class="text-danger">
+                            {% for error in form.archivo_oracle.errors %}
+                                <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="upload-progress">
+                        <div class="upload-progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Errores generales del formulario -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Sección de envío -->
+            <div class="submit-section">
+                <button type="submit" class="btn-procesar" id="btnProcesar">
+                    <i class="fas fa-play me-2"></i>
+                    Iniciar Procesamiento
+                </button>
+                
+                <div class="processing-note">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>
+                        El procesamiento puede tomar varios minutos dependiendo del tamaño de los archivos
+                    </small>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Requisitos -->
+<div id="requirementsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>
+                <i class="fas fa-info-circle"></i>
+                Requisitos de Archivos
+            </h5>
+            <button type="button" class="close" onclick="closeRequirementsModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="requirement-section">
+                <h6><i class="fas fa-chart-line me-2"></i>Archivo Aging</h6>
+                <ul class="requirement-list">
+                    <li><i class="fas fa-check"></i>Hoja: "Detalle de aging"</li>
+                    <li><i class="fas fa-check"></i>Formato: .xlsx</li>
+                    <li><i class="fas fa-check"></i>Tamaño máx: 50MB</li>
+                </ul>
+            </div>
+            <div class="requirement-section">
+                <h6><i class="fas fa-project-diagram me-2"></i>Archivo Pipeline</h6>
+                <ul class="requirement-list">
+                    <li><i class="fas fa-check"></i>Hoja: "Pipeline 2025"</li>
+                    <li><i class="fas fa-check"></i>Formato: .xlsx</li>
+                    <li><i class="fas fa-check"></i>Tamaño máx: 50MB</li>
+                </ul>
+            </div>
+            <div class="requirement-section">
+                <h6><i class="fas fa-database me-2"></i>Archivo Oracle</h6>
+                <ul class="requirement-list">
+                    <li><i class="fas fa-check"></i>Hoja: "Hoja1"</li>
+                    <li><i class="fas fa-check"></i>Formato: .xlsx</li>
+                    <li><i class="fas fa-check"></i>Tamaño máx: 50MB</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Funciones para el modal de requisitos
+function showRequirementsModal() {
+    const modal = document.getElementById('requirementsModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRequirementsModal() {
+    const modal = document.getElementById('requirementsModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('requirementsModal');
+    if (event.target === modal) {
+        closeRequirementsModal();
+    }
+});
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeRequirementsModal();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('procesarForm');
+    const btnProcesar = document.getElementById('btnProcesar');
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    // Validar archivos y cambiar apariencia
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const section = this.closest('.file-section');
+            if (this.files.length > 0) {
+                section.classList.add('has-file');
+                validateFileSize(this);
+            } else {
+                section.classList.remove('has-file');
+            }
+            checkFormValidity();
+        });
+    });
+    
+    function validateFileSize(input) {
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        if (input.files[0] && input.files[0].size > maxSize) {
+            alert('El archivo es demasiado grande. El tamaño máximo permitido es 50MB.');
+            input.value = '';
+            input.closest('.file-section').classList.remove('has-file');
+        }
+    }
+    
+    function checkFormValidity() {
+        const allFilled = Array.from(fileInputs).every(input => input.files.length > 0);
+        btnProcesar.disabled = !allFilled;
+    }
+    
+    // Manejar envío del formulario
+    form.addEventListener('submit', function(e) {
+        const allFilled = Array.from(fileInputs).every(input => input.files.length > 0);
+        
+        if (!allFilled) {
+            e.preventDefault();
+            alert('Por favor, selecciona los tres archivos requeridos.');
+            return;
+        }
+        
+        btnProcesar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+        btnProcesar.disabled = true;
+        
+        // Simular progreso de subida
+        const progressBars = document.querySelectorAll('.upload-progress');
+        progressBars.forEach(bar => {
+            bar.style.display = 'block';
+            const progressFill = bar.querySelector('.upload-progress-bar');
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 10;
+                if (width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = width + '%';
+            }, 100);
+        });
+    });
+    
+    // Validación inicial
+    checkFormValidity();
+});
+</script>
+{% endblock %} 

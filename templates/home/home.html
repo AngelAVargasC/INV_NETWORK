@@ -1,0 +1,837 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel Ejecutivo - AT&T PMO System{% endblock %}
+
+{% block page_title %}Dashboard Ejecutivo{% endblock %}
+
+{% block breadcrumb %}{{ breadcrumb }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* === DASHBOARD EJECUTIVO === */
+.executive-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    animation: fadeInUp 0.6s ease;
+}
+
+/* === MÉTRICAS EJECUTIVAS === */
+.executive-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.metric-executive-card {
+    background: var(--att-white);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-soft);
+    border-left: 4px solid;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-executive-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border-radius: 0 var(--border-radius-xl) 0 30px;
+}
+
+.metric-executive-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.metric-executive-card.primary { border-left-color: var(--att-primary); }
+.metric-executive-card.success { border-left-color: var(--att-success); }
+.metric-executive-card.warning { border-left-color: var(--att-warning); }
+.metric-executive-card.info { border-left-color: var(--att-info); }
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.metric-icon-exec {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--att-white);
+}
+
+.metric-executive-card.primary .metric-icon-exec {
+    background: var(--att-gradient);
+}
+
+.metric-executive-card.success .metric-icon-exec {
+    background: linear-gradient(135deg, var(--att-success), #16a34a);
+}
+
+.metric-executive-card.warning .metric-icon-exec {
+    background: linear-gradient(135deg, var(--att-warning), #d97706);
+}
+
+.metric-executive-card.info .metric-icon-exec {
+    background: linear-gradient(135deg, var(--att-info), #0284c7);
+}
+
+.metric-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.metric-trend.positive { color: var(--att-success); }
+.metric-trend.negative { color: var(--att-error); }
+.metric-trend.neutral { color: var(--att-gray-500); }
+
+.metric-body {
+    margin-bottom: var(--spacing-sm);
+}
+
+.metric-value-exec {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--att-gray-800);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+}
+
+.metric-label-exec {
+    font-size: var(--font-size-sm);
+    color: var(--att-gray-600);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === CONTENIDO EJECUTIVO === */
+.executive-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.executive-panel {
+    background: var(--att-white);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    transition: var(--transition-normal);
+    animation: fadeInUp 0.6s ease;
+}
+
+.executive-panel:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.panel-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: linear-gradient(135deg, var(--att-gray-50), var(--att-white));
+    border-bottom: 1px solid var(--att-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--att-gray-800);
+}
+
+.panel-title i {
+    color: var(--att-primary);
+    font-size: 1.2rem;
+}
+
+.panel-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--att-primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.panel-action:hover {
+    color: var(--att-light-blue);
+    transform: translateX(3px);
+}
+
+.panel-body {
+    padding: var(--spacing-xl);
+}
+
+/* === ACTIVIDAD RECIENTE === */
+.activity-list-exec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.activity-list-exec::-webkit-scrollbar {
+    width: 4px;
+}
+
+.activity-list-exec::-webkit-scrollbar-track {
+    background: var(--att-gray-100);
+    border-radius: 2px;
+}
+
+.activity-list-exec::-webkit-scrollbar-thumb {
+    background: var(--att-primary);
+    border-radius: 2px;
+}
+
+.activity-list-exec::-webkit-scrollbar-thumb:hover {
+    background: var(--att-light-blue);
+}
+
+.activity-item-exec {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background: var(--att-gray-50);
+    transition: var(--transition-fast);
+}
+
+.activity-item-exec:hover {
+    background: var(--att-gray-100);
+    transform: translateX(5px);
+}
+
+.activity-icon-exec {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-md);
+    background: var(--att-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--att-white);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.activity-content-exec {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-title-exec {
+    font-weight: 600;
+    color: var(--att-gray-800);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-meta-exec {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-xs);
+    color: var(--att-gray-600);
+}
+
+.activity-status-exec {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* === DISTRIBUCIONES === */
+.distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.distribution-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.distribution-list::-webkit-scrollbar-track {
+    background: var(--att-gray-100);
+    border-radius: 2px;
+}
+
+.distribution-list::-webkit-scrollbar-thumb {
+    background: var(--att-primary);
+    border-radius: 2px;
+}
+
+.distribution-list::-webkit-scrollbar-thumb:hover {
+    background: var(--att-light-blue);
+}
+
+.distribution-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background: var(--att-gray-50);
+    transition: var(--transition-fast);
+}
+
+.distribution-item:hover {
+    background: var(--att-gray-100);
+}
+
+.distribution-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.distribution-name {
+    font-weight: 600;
+    color: var(--att-gray-800);
+    font-size: var(--font-size-sm);
+}
+
+.distribution-count {
+    font-size: var(--font-size-xs);
+    color: var(--att-gray-600);
+}
+
+.distribution-progress {
+    width: 100px;
+    height: 6px;
+    background: var(--att-gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--att-gradient);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* === USUARIOS RECIENTES === */
+.users-list-exec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.users-list-exec::-webkit-scrollbar {
+    width: 4px;
+}
+
+.users-list-exec::-webkit-scrollbar-track {
+    background: var(--att-gray-100);
+    border-radius: 2px;
+}
+
+.users-list-exec::-webkit-scrollbar-thumb {
+    background: var(--att-primary);
+    border-radius: 2px;
+}
+
+.users-list-exec::-webkit-scrollbar-thumb:hover {
+    background: var(--att-light-blue);
+}
+
+.user-item-exec {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background: var(--att-gray-50);
+    transition: var(--transition-fast);
+}
+
+.user-item-exec:hover {
+    background: var(--att-gray-100);
+    transform: translateX(3px);
+}
+
+.user-avatar-exec {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--att-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--att-white);
+    font-size: 1.1rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.user-avatar-exec img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info-exec {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name-exec {
+    font-weight: 600;
+    color: var(--att-gray-800);
+    font-size: var(--font-size-sm);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role-exec {
+    font-size: var(--font-size-xs);
+    color: var(--att-gray-600);
+}
+
+.user-date-exec {
+    font-size: var(--font-size-xs);
+    color: var(--att-gray-500);
+    font-weight: 500;
+}
+
+/* === ACCIONES RÁPIDAS === */
+.quick-actions-exec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.quick-action-exec {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--att-gray-50);
+    border-radius: var(--border-radius-lg);
+    text-decoration: none;
+    transition: var(--transition-normal);
+    border: 2px solid transparent;
+}
+
+.quick-action-exec:hover {
+    background: var(--att-white);
+    border-color: var(--att-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+.action-icon-exec {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--att-white);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.quick-action-exec.primary .action-icon-exec {
+    background: var(--att-gradient);
+}
+
+.quick-action-exec.success .action-icon-exec {
+    background: linear-gradient(135deg, var(--att-success), #16a34a);
+}
+
+.quick-action-exec.warning .action-icon-exec {
+    background: linear-gradient(135deg, var(--att-warning), #d97706);
+}
+
+.quick-action-exec.info .action-icon-exec {
+    background: linear-gradient(135deg, var(--att-info), #0284c7);
+}
+
+.action-content-exec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.action-title-exec {
+    font-weight: 600;
+    color: var(--att-gray-800);
+    font-size: var(--font-size-sm);
+}
+
+.action-desc-exec {
+    font-size: var(--font-size-xs);
+    color: var(--att-gray-600);
+}
+
+/* === ESTADOS VACÍOS === */
+.empty-state-exec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--att-gray-500);
+}
+
+.empty-state-exec i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.3;
+}
+
+.empty-state-exec p {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .executive-metrics {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-md);
+    }
+    
+    .executive-content-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .quick-actions-exec {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="executive-dashboard">
+    <!-- Métricas Ejecutivas Principales -->
+    <section class="executive-metrics">
+        <div class="metric-executive-card primary">
+            <div class="metric-header">
+                <div class="metric-icon-exec">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="metric-trend {% if tendencias.usuarios > 0 %}positive{% else %}neutral{% endif %}">
+                    <i class="fas fa-arrow-{% if tendencias.usuarios > 0 %}up{% else %}minus{% endif %}"></i>
+                    <span>{% if tendencias.usuarios > 0 %}+{% endif %}{{ tendencias.usuarios }}%</span>
+                </div>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value-exec">{{ total_usuarios }}</div>
+                <div class="metric-label-exec">Usuarios Activos</div>
+                </div>
+            </div>
+            
+        <div class="metric-executive-card success">
+            <div class="metric-header">
+                <div class="metric-icon-exec">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="metric-trend {% if tendencias.articulos > 0 %}positive{% else %}neutral{% endif %}">
+                    <i class="fas fa-arrow-{% if tendencias.articulos > 0 %}up{% else %}minus{% endif %}"></i>
+                    <span>{% if tendencias.articulos > 0 %}+{% endif %}{{ tendencias.articulos }}%</span>
+                </div>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value-exec">{{ total_articulos }}</div>
+                <div class="metric-label-exec">Total Artículos</div>
+                </div>
+            </div>
+            
+        <div class="metric-executive-card warning">
+            <div class="metric-header">
+                <div class="metric-icon-exec">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric-trend {% if tendencias.pendientes < 0 %}positive{% else %}negative{% endif %}">
+                    <i class="fas fa-arrow-{% if tendencias.pendientes < 0 %}down{% else %}up{% endif %}"></i>
+                    <span>{{ tendencias.pendientes }}%</span>
+                </div>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value-exec">{{ articulos_pendientes }}</div>
+                <div class="metric-label-exec">Pendientes</div>
+                </div>
+            </div>
+            
+        <div class="metric-executive-card info">
+            <div class="metric-header">
+                <div class="metric-icon-exec">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="metric-trend neutral">
+                    <i class="fas fa-minus"></i>
+                    <span>{{ tendencias.areas }}%</span>
+                </div>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value-exec">{{ areas_stats|length }}</div>
+                <div class="metric-label-exec">Áreas Activas</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contenido Ejecutivo -->
+    <section class="executive-content-grid">
+        <!-- Actividad Reciente -->
+        <div class="executive-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">
+                    <i class="fas fa-history"></i>
+                    Actividad Reciente
+                </h3>
+                <a href="{% url 'inventario:articulo_list' %}" class="panel-action">
+                    Ver todo <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="panel-body">
+                {% if articulos_recientes %}
+                    <div class="activity-list-exec">
+                        {% for articulo in articulos_recientes %}
+                        <div class="activity-item-exec">
+                            <div class="activity-icon-exec">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="activity-content-exec">
+                                <div class="activity-title-exec">{{ articulo.nombre_proyecto|default:articulo.articulo|truncatechars:35 }}</div>
+                                <div class="activity-meta-exec">
+                                    <span class="activity-id">{{ articulo.id_pmo }}</span>
+                                    <span class="activity-date">{{ articulo.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                                </div>
+                            </div>
+                            <div class="activity-status-exec" style="background: rgba(0, 162, 255, 0.1); color: var(--att-primary);">
+                                {{ articulo.estatus_pmo_texto|default:"Sin estatus" }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-exec">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay actividad reciente</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Distribución por Áreas -->
+        <div class="executive-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">
+                    <i class="fas fa-sitemap"></i>
+                    Distribución por Áreas
+                </h3>
+            </div>
+            <div class="panel-body">
+                {% if areas_stats %}
+                    <div class="distribution-list">
+                        {% for area in areas_stats %}
+                        <div class="distribution-item">
+                            <div class="distribution-info">
+                                <div class="distribution-name">{{ area.nombre }}</div>
+                                <div class="distribution-count">{{ area.total }} usuario{{ area.total|pluralize }}</div>
+                            </div>
+                            <div class="distribution-progress">
+                                <div class="progress-fill" style="width: {{ area.porcentaje }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-exec">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No hay datos de áreas</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Usuarios Recientes -->
+        <div class="executive-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">
+                    <i class="fas fa-user-plus"></i>
+                    Usuarios Recientes
+                </h3>
+                <a href="{% url 'usuarios:perfil' %}" class="panel-action">
+                    Ver perfil <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="panel-body">
+                {% if usuarios_recientes %}
+                    <div class="users-list-exec">
+                        {% for usuario in usuarios_recientes %}
+                        <div class="user-item-exec">
+                            <div class="user-avatar-exec">
+                                {% if usuario.perfilusuario.foto %}
+                                    <img src="{{ usuario.perfilusuario.foto.url }}" alt="{{ usuario.get_full_name }}">
+                                {% else %}
+                                    <i class="fas fa-user-tie"></i>
+                                {% endif %}
+                            </div>
+                            <div class="user-info-exec">
+                                <div class="user-name-exec">{{ usuario.get_full_name|default:usuario.username }}</div>
+                                <div class="user-role-exec">{{ usuario.perfilusuario.get_area_display|default:"Sin área" }}</div>
+                            </div>
+                            <div class="user-date-exec">
+                                {{ usuario.date_joined|date:"d/m" }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-exec">
+                        <i class="fas fa-user-slash"></i>
+                        <p>No hay usuarios recientes</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Acciones Rápidas -->
+        <div class="executive-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">
+                    <i class="fas fa-bolt"></i>
+                    Acciones Rápidas
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="quick-actions-exec">
+                    <a href="{% url 'inventario:dashboard' %}" class="quick-action-exec primary">
+                        <div class="action-icon-exec">
+                            <i class="fas fa-analytics"></i>
+                        </div>
+                        <div class="action-content-exec">
+                            <div class="action-title-exec">Dashboard PMO</div>
+                            <div class="action-desc-exec">Ver métricas detalladas</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'inventario:articulo_list' %}" class="quick-action-exec success">
+                        <div class="action-icon-exec">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="action-content-exec">
+                            <div class="action-title-exec">Base de Datos</div>
+                            <div class="action-desc-exec">Gestionar inventario</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'inventario:importar_datos' %}" class="quick-action-exec warning">
+                        <div class="action-icon-exec">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="action-content-exec">
+                            <div class="action-title-exec">Importar Datos</div>
+                            <div class="action-desc-exec">Cargar archivos Excel</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'usuarios:perfil' %}" class="quick-action-exec info">
+                        <div class="action-icon-exec">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <div class="action-content-exec">
+                            <div class="action-title-exec">Mi Perfil</div>
+                            <div class="action-desc-exec">Configurar cuenta</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Portal Ejecutivo JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Animaciones de métricas al cargar
+    const metricCards = document.querySelectorAll('.metric-executive-card');
+    metricCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Animaciones de paneles
+    const executivePanels = document.querySelectorAll('.executive-panel');
+    executivePanels.forEach((panel, index) => {
+        panel.style.animationDelay = `${(index + 4) * 0.1}s`;
+    });
+    
+    // Animaciones de barras de progreso
+    const progressBars = document.querySelectorAll('.progress-fill');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+    
+    // Efectos hover mejorados
+    const actionCards = document.querySelectorAll('.quick-action-exec');
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Console log para debugging ejecutivo
+    console.log('🏢 AT&T Executive Dashboard Loaded');
+    console.log(`📊 Métricas: ${metricCards.length} tarjetas, ${executivePanels.length} paneles`);
+});
+</script>
+{% endblock %} 

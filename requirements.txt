@@ -1,0 +1,93 @@
+# =============================================================================
+# AT&T INVENTARIO NETWORK APP - REQUIREMENTS PARA PRODUCCIÓN
+# =============================================================================
+# Fecha actualización: 2025-01-28
+# Versión: 1.2.1
+# Entorno objetivo: Servidor Local AT&T
+
+# FRAMEWORK PRINCIPAL
+# =============================================================================
+Django==5.2.3                 # Framework web principal
+asgiref==3.8.1                # ASGI support para Django
+
+# BASE DE DATOS Y CONECTORES
+# =============================================================================
+mysqlclient==2.2.7            # Cliente MySQL (actualizado)
+# psycopg2-binary==2.9.9      # PostgreSQL support (descomentear si se usa)
+
+# PROCESAMIENTO DE DATOS Y ARCHIVOS
+# =============================================================================
+pandas==2.3.0                 # Análisis de datos y Excel (actualizado)
+numpy==2.3.0                  # Dependencia de pandas
+openpyxl==3.1.5               # Archivos Excel modernos (actualizado)
+xlrd==2.0.2                   # Archivos Excel legacy (actualizado)
+xlsxwriter==3.2.5             # Escritura de archivos Excel con formato
+et-xmlfile==2.0.0             # Dependencia de openpyxl
+
+# MANEJO DE IMÁGENES Y MEDIA
+# =============================================================================
+Pillow==11.2.1                # Procesamiento de imágenes
+
+# VARIABLES DE ENTORNO Y CONFIGURACIÓN
+# =============================================================================
+python-dotenv==1.1.0          # Variables de entorno (actualizado)
+python-decouple==3.8          # Configuración segura para producción
+
+# SERVIDOR WEB Y PRODUCCIÓN
+# =============================================================================
+gunicorn==22.0.0               # Servidor WSGI para producción
+whitenoise==6.6.0             # Servir archivos estáticos eficientemente
+
+# CACHE Y PERFORMANCE
+# =============================================================================
+redis==5.0.1                  # Cache y sesiones
+django-redis==5.4.0           # Integración Django-Redis
+
+# SEGURIDAD Y MONITOREO
+# =============================================================================
+django-cors-headers==4.3.1    # CORS para APIs
+django-ratelimit==4.1.0       # Rate limiting para seguridad
+
+# UTILIDADES Y HELPERS
+# =============================================================================
+python-dateutil==2.9.0.post0  # Manejo avanzado de fechas
+pytz==2025.2                   # Zonas horarias
+six==1.17.0                    # Compatibilidad Python 2/3
+sqlparse==0.5.3               # Parser SQL para Django
+tzdata==2025.2                 # Datos de zona horaria
+typing-extensions==4.14.0     # Extensiones de tipos para mejor compatibilidad
+
+# TAREAS ASÍNCRONAS (OPCIONAL - Descomentar si se necesita)
+# =============================================================================
+# celery==5.3.4                # Tareas en background
+# django-celery-beat==2.5.0    # Scheduler para Celery
+
+# DESARROLLO Y TESTING (Solo para desarrollo)
+# =============================================================================
+# django-debug-toolbar==4.2.0 # Debug para desarrollo
+# django-extensions==3.2.3    # Comandos adicionales de Django
+
+# APIS Y WEB SCRAPING (OPCIONAL - Descomentar si se necesita)
+# =============================================================================
+# requests==2.31.0             # HTTP requests
+# beautifulsoup4==4.12.2       # Web scraping
+# lxml==4.9.3                  # XML/HTML parsing
+
+# =============================================================================
+# NOTAS DE INSTALACIÓN:
+# 
+# 1. Para instalar todo: pip install -r requirements.txt
+# 2. Para producción: pip install -r requirements.txt --no-dev
+# 3. Para actualizar: pip install -r requirements.txt --upgrade
+# 
+# COMPATIBILIDAD:
+# - Python >= 3.11
+# - MySQL >= 8.0
+# - Redis >= 7.0 (opcional)
+# - Nginx (recomendado para producción)
+# 
+# SEGURIDAD:
+# - Todas las versiones están fijadas para evitar conflictos
+# - Versiones probadas en entorno empresarial
+# - Compatible con auditorías de seguridad corporativas
+# ============================================================================= 

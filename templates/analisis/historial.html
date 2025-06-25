@@ -1,0 +1,1254 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial de Procesamientos - Análisis{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --att-blue: #00a8cc;
+    --att-dark-blue: #0066cc;
+    --att-light-blue: #e6f7ff;
+    --att-orange: #ff6600;
+    --att-gray: #6c757d;
+    --att-light-gray: #f8f9fa;
+    --att-white: #ffffff;
+    --att-success: #28a745;
+    --att-warning: #ffc107;
+    --att-danger: #dc3545;
+    --sidebar-blue: #1a73e8; /* Color azul del sidebar */
+}
+
+.historial-container {
+    padding: 2rem;
+    background: var(--att-light-gray);
+    min-height: 100vh;
+    margin-top: 0px; /* Espacio para el navbar */
+}
+
+.page-header {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--sidebar-blue);
+}
+
+.page-header h1 {
+    color: var(--att-dark-blue);
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--att-gray);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.historial-card {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+}
+
+.btn-back {
+    background: linear-gradient(135deg, var(--att-white), #f8f9fa);
+    color: var(--att-dark-blue);
+    border: 2px solid var(--sidebar-blue);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(26, 115, 232, 0.15);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-back::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(26, 115, 232, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-back:hover::before {
+    left: 100%;
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, var(--att-light-blue), #e3f2fd);
+    color: var(--att-dark-blue);
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.25);
+    border-color: var(--att-blue);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.btn-new-process {
+    background: linear-gradient(135deg, var(--sidebar-blue), var(--att-dark-blue));
+    color: var(--att-white);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+}
+
+.btn-new-process:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
+    color: var(--att-white);
+    text-decoration: none;
+}
+
+.filters-section {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: 2.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.filters-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sidebar-blue), var(--att-blue), var(--att-dark-blue));
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.actions-group {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.filters-title {
+    color: var(--att-dark-blue);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    padding: 0.6rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--sidebar-blue);
+    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
+}
+
+.btn-filter {
+    background: var(--sidebar-blue);
+    color: var(--att-white);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-filter:hover {
+    background: var(--att-dark-blue);
+    transform: translateY(-1px);
+    color: var(--att-white);
+}
+
+.btn-clear {
+    background: var(--att-white);
+    color: var(--att-gray);
+    border: 2px solid #dee2e6;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-clear:hover {
+    background: #f8f9fa;
+    border-color: var(--att-gray);
+    color: var(--att-gray);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.procesamiento-row {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+}
+
+.procesamiento-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sidebar-blue), var(--att-blue), var(--att-dark-blue));
+}
+
+.procesamiento-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.procesamiento-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    flex: 1;
+}
+
+.procesamiento-meta-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.procesamiento-status-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.procesamiento-row:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-top-color: var(--att-orange);
+}
+
+.procesamiento-row:hover::before {
+    background: linear-gradient(90deg, var(--att-orange), var(--sidebar-blue));
+}
+
+.procesamiento-id {
+    font-weight: 700;
+    color: var(--sidebar-blue);
+    font-size: 1.1rem;
+}
+
+.procesamiento-date {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+}
+
+.procesamiento-file {
+    font-weight: 600;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.3rem;
+}
+
+.procesamiento-meta {
+    color: var(--att-gray);
+    font-size: 0.85rem;
+}
+
+.estado-badge {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid;
+}
+
+.estado-completado {
+    background: #d4edda;
+    color: var(--att-success);
+    border-color: #c3e6cb;
+}
+
+.estado-procesando {
+    background: #fff3cd;
+    color: #856404;
+    border-color: #ffeaa7;
+}
+
+.estado-error {
+    background: #f8d7da;
+    color: var(--att-danger);
+    border-color: #f1b0b7;
+}
+
+.success-metric {
+    font-weight: 700;
+    color: var(--att-success);
+    font-size: 1.1rem;
+}
+
+.processing-indicator {
+    color: var(--att-warning);
+    font-weight: 600;
+}
+
+.error-indicator {
+    color: var(--att-danger);
+    font-weight: 600;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 2px solid;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+}
+
+.btn-action-primary {
+    color: var(--sidebar-blue);
+    border-color: var(--sidebar-blue);
+    background: var(--att-white);
+}
+
+.btn-action-primary:hover {
+    background: var(--sidebar-blue);
+    color: var(--att-white);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-action-success {
+    color: var(--att-success);
+    border-color: var(--att-success);
+    background: var(--att-white);
+}
+
+.btn-action-success:hover {
+    background: var(--att-success);
+    color: var(--att-white);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-action-info {
+    color: var(--att-blue);
+    border-color: var(--att-blue);
+    background: var(--att-white);
+}
+
+.btn-action-info:hover {
+    background: var(--att-blue);
+    color: var(--att-white);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-action-danger {
+    color: var(--att-danger);
+    border-color: var(--att-danger);
+    background: var(--att-white);
+}
+
+.btn-action-danger:hover {
+    background: var(--att-danger);
+    color: var(--att-white);
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--att-gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--sidebar-blue);
+    opacity: 0.6;
+}
+
+.empty-state h4 {
+    color: var(--att-dark-blue);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.pagination .page-link {
+    border: 2px solid #dee2e6;
+    color: var(--sidebar-blue);
+    padding: 0.6rem 1rem;
+    margin: 0 0.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: var(--sidebar-blue);
+    color: var(--att-white);
+    border-color: var(--sidebar-blue);
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--sidebar-blue);
+    border-color: var(--sidebar-blue);
+    color: var(--att-white);
+}
+
+/* Modal vanilla styles */
+#confirmDeleteModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1055;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-dialog {
+    background: white;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    margin: 0;
+}
+
+#confirmDeleteModal.show .modal-dialog {
+    transform: scale(1);
+}
+
+.delete-modal {
+    border-radius: 15px;
+    border: none;
+    overflow: hidden;
+}
+
+.delete-modal-header {
+    background: linear-gradient(135deg, var(--att-danger), #e74c3c);
+    color: var(--att-white);
+    border-radius: 15px 15px 0 0;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+.delete-modal-body {
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: var(--att-gray);
+    background: #f8f9fa;
+}
+
+.warning-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    border-radius: 12px;
+}
+
+.warning-icon {
+    font-size: 2rem;
+    color: #856404;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.warning-text p {
+    color: #856404;
+    margin-bottom: 0.5rem;
+}
+
+.delete-modal-footer {
+    border-top: none;
+    padding: 1rem 2rem 2rem;
+    background: var(--att-white);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-cancel {
+    background: var(--att-white);
+    color: var(--att-gray);
+    border: 2px solid #dee2e6;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #f8f9fa;
+    border-color: var(--att-gray);
+    color: var(--att-gray);
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: var(--att-white);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    color: var(--att-white);
+}
+
+.procesamiento-id {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.3rem;
+}
+
+.procesamiento-date {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.procesamiento-details {
+    flex: 1;
+}
+
+.procesamiento-file {
+    font-size: 1rem;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.procesamiento-meta {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+}
+
+.estado-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.estado-completado {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: var(--att-success);
+    border: 1px solid #c3e6cb;
+}
+
+.estado-procesando {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.estado-error {
+    background: linear-gradient(135deg, #f8d7da, #f1b0b7);
+    color: var(--att-danger);
+    border: 1px solid #f1b0b7;
+}
+
+.success-metric {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--att-success);
+}
+
+.processing-indicator, .error-indicator {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.processing-indicator {
+    color: var(--att-warning);
+}
+
+.error-indicator {
+    color: var(--att-danger);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-action-primary {
+    background: linear-gradient(135deg, var(--sidebar-blue), var(--att-blue));
+    color: white;
+}
+
+.btn-action-success {
+    background: linear-gradient(135deg, var(--att-success), #20c997);
+    color: white;
+}
+
+.btn-action-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.btn-action-danger {
+    background: linear-gradient(135deg, var(--att-danger), #c82333);
+    color: white;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--att-gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--att-blue);
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    color: var(--att-dark-blue);
+    margin-bottom: 1rem;
+}
+
+.pagination-container {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    background: white;
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.page-link {
+    color: var(--att-dark-blue);
+    border: none;
+    margin: 0 0.2rem;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background: var(--att-light-blue);
+    color: var(--att-dark-blue);
+}
+
+.page-item.active .page-link {
+    background: var(--sidebar-blue);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .historial-container {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+    
+    .historial-card {
+        padding: 1.5rem;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .procesamiento-row {
+        padding: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .procesamiento-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-section {
+        padding: 1.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.historial-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.procesamiento-row {
+    animation: slideInFromLeft 0.5s ease forwards;
+}
+
+.procesamiento-row:nth-child(1) { animation-delay: 0.1s; }
+.procesamiento-row:nth-child(2) { animation-delay: 0.2s; }
+.procesamiento-row:nth-child(3) { animation-delay: 0.3s; }
+.procesamiento-row:nth-child(4) { animation-delay: 0.4s; }
+.procesamiento-row:nth-child(5) { animation-delay: 0.5s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="historial-container">
+    <a href="{% url 'analisis:dashboard' %}" class="btn-back">
+        <i class="fas fa-arrow-left"></i>Volver al Dashboard
+    </a>
+
+    <div class="page-header">
+        <div class="header-actions">
+            <div>
+                <h1>
+                    <i class="fas fa-history me-3"></i>
+                    Historial de Procesamientos
+                </h1>
+                <p>
+                    Todos tus procesamientos de análisis de inventario
+                </p>
+            </div>
+            <div>
+                <a href="{% url 'analisis:procesar_archivos' %}" class="btn-new-process">
+                    <i class="fas fa-plus"></i>Nuevo Procesamiento
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="historial-card">
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="filters-title">
+                <i class="fas fa-filter"></i>
+                Filtros de Búsqueda
+            </div>
+            <form method="get">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="form-label">Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos los estados</option>
+                            {% for value, label in estados_choices %}
+                                <option value="{{ value }}" {% if estado_filtro == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="{{ fecha_desde }}">
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="{{ fecha_hasta }}">
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="actions-group">
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <a href="{% url 'analisis:historial' %}" class="btn-clear">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de Procesamientos -->
+        {% if procesamientos %}
+            {% for procesamiento in procesamientos %}
+                <div class="procesamiento-row">
+                    <!-- Información básica del procesamiento -->
+                    <div class="procesamiento-meta-section">
+                        <div class="procesamiento-id">#{{ procesamiento.id }}</div>
+                        <div class="procesamiento-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ procesamiento.fecha_procesamiento|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    <!-- Información central del procesamiento -->
+                    <div class="procesamiento-info">
+                        <div class="procesamiento-details">
+                            <div class="procesamiento-file">
+                                <i class="fas fa-file-excel me-2 text-primary"></i>
+                                <strong>{{ procesamiento.archivo_aging|truncatechars:30 }}</strong>
+                            </div>
+                            <div class="procesamiento-meta">
+                                {% if procesamiento.total_registros_aging %}
+                                    {{ procesamiento.total_registros_aging }} registros procesados
+                                {% else %}
+                                    Procesando...
+                                {% endif %}
+                                {% if procesamiento.tiempo_procesamiento %}
+                                    • {{ procesamiento.tiempo_procesamiento|floatformat:1 }}s
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="procesamiento-status-section">
+                            <span class="estado-badge estado-{{ procesamiento.estado }}">
+                                {{ procesamiento.get_estado_display }}
+                            </span>
+                            {% if procesamiento.estado == 'completado' %}
+                                <div class="success-metric">{{ procesamiento.tasa_exito_total|default:0 }}%</div>
+                                <small class="procesamiento-meta">Tasa de Éxito</small>
+                            {% elif procesamiento.estado == 'procesando' %}
+                                <div class="processing-indicator">
+                                    <i class="fas fa-spinner fa-spin me-1"></i>En Proceso
+                                </div>
+                            {% else %}
+                                <div class="error-indicator">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Error
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="action-buttons">
+                        <a href="{% url 'analisis:detalle_procesamiento' procesamiento.pk %}" 
+                           class="btn-action btn-action-primary" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        
+                        {% if procesamiento.estado == 'completado' %}
+                            <a href="{% url 'analisis:descargar_archivo' procesamiento.pk 'resultado' %}" 
+                               class="btn-action btn-action-success" title="Descargar resultado">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'analisis:exportar_logs' procesamiento.pk %}" 
+                           class="btn-action btn-action-info" title="Exportar logs">
+                            <i class="fas fa-file-alt"></i>
+                        </a>
+                        
+                        {% if procesamiento.estado != 'procesando' %}
+                            <button class="btn-action btn-action-danger" 
+                                    onclick="showDeleteModal({{ procesamiento.pk }})"
+                                    title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>No hay procesamientos</h4>
+                <p>
+                    {% if estado_filtro or fecha_desde or fecha_hasta %}
+                        No se encontraron procesamientos con los filtros aplicados.
+                    {% else %}
+                        Aún no has realizado ningún procesamiento de análisis.
+                    {% endif %}
+                </p>
+                <a href="{% url 'analisis:procesar_archivos' %}" class="btn-new-process">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Procesamiento
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Paginación -->
+        {% if page_obj.has_other_pages %}
+            <div class="pagination-container">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div id="confirmDeleteModal" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content delete-modal">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body delete-modal-body">
+                <div class="warning-content">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="warning-text">
+                        <p><strong>¿Estás seguro de que deseas eliminar este procesamiento?</strong></p>
+                        <p>Esta acción es <strong>irreversible</strong> y eliminará permanentemente todos los archivos asociados.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeDeleteModal()">
+                    <i class="fas fa-times me-1"></i>Cancelar
+                </button>
+                <form method="post" action="#" id="deleteForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-1"></i>Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentProcesamientoId = null;
+
+// Función para mostrar el modal de eliminación
+function showDeleteModal(procesamientoId) {
+    currentProcesamientoId = procesamientoId;
+    
+    // Configurar la acción del formulario
+    const deleteForm = document.getElementById('deleteForm');
+    deleteForm.action = "{% url 'analisis:eliminar_procesamiento' 0 %}".replace('0', procesamientoId);
+    
+    // Mostrar modal
+    const modal = document.getElementById('confirmDeleteModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        modal.style.zIndex = '1055';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        
+        // Prevenir scroll del body
+        document.body.style.overflow = 'hidden';
+        
+        // Agregar clase para animaciones
+        modal.classList.add('show');
+    }
+}
+
+// Función para cerrar el modal
+function closeDeleteModal() {
+    const modal = document.getElementById('confirmDeleteModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        
+        // Restaurar scroll del body
+        document.body.style.overflow = '';
+        
+        // Reset del botón de confirmación
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmBtn && confirmBtn.classList.contains('confirmed')) {
+            confirmBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Eliminar';
+            confirmBtn.classList.remove('confirmed');
+            confirmBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+        }
+        
+        currentProcesamientoId = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener para cerrar modal al hacer clic fuera
+    document.getElementById('confirmDeleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Event listener para cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('confirmDeleteModal');
+            if (modal.style.display === 'flex') {
+                closeDeleteModal();
+            }
+        }
+    });
+    
+    // Confirmar eliminación con doble verificación
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Cambiar el botón para confirmar
+            if (!this.classList.contains('confirmed')) {
+                this.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>¡Confirmar!';
+                this.classList.add('confirmed');
+                this.style.background = 'linear-gradient(135deg, #bd2130, #a71e2a)';
+                
+                // Auto-reset después de 3 segundos
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-trash me-1"></i>Eliminar';
+                    this.classList.remove('confirmed');
+                    this.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                }, 3000);
+            } else {
+                // Proceder con la eliminación enviando el formulario
+                this.form.submit();
+            }
+        });
+    }
+    
+    // Auto-actualizar procesamientos en curso
+    const processingItems = document.querySelectorAll('.processing-indicator');
+    if (processingItems.length > 0) {
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000); // Actualizar cada 30 segundos
+    }
+    
+    // Animación de entrada para las rows
+    const rows = document.querySelectorAll('.procesamiento-row');
+    rows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-30px)';
+        setTimeout(() => {
+            row.style.transition = 'all 0.5s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %} 

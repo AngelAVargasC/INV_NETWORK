@@ -1,0 +1,1259 @@
+{% load static %}
+{% load filter_utils %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Datos PMO - Pantalla Completa | AT&T Executive</title>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="{% static 'fontawesome-free-6.7.2-web/css/all.min.css' %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/att-favicon.ico' %}">
+
+    <style>
+        /* Reset and Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: #fafbfc;
+            min-height: 100vh;
+            color: #1a1a1a;
+            line-height: 1.5;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* Executive Header */
+        .executive-header {
+            background: linear-gradient(135deg, #0084ff 0%, #0088ff 50%, #00a2ff 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 162, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: none;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header-title i {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .records-count {
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        /* Refined Filters */
+        .filters-section {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-label i {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .filter-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: white;
+            font-weight: 400;
+        }
+
+        .filter-input:focus {
+            border-color: #00a2ff;
+            box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+            outline: none;
+        }
+
+        .filter-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Executive Buttons */
+        .btn-executive {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            line-height: 1;
+        }
+
+        .btn-primary {
+            background: #00a2ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0066cc;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 162, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+            border-color: #9ca3af;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stats-item i {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* Executive Table */
+        .table-container {
+            height: calc(100vh - 200px);
+            overflow: auto;
+            background: white;
+        }
+
+        .executive-table {
+            width: 100%;
+            min-width: 2800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.8rem;
+        }
+
+        .executive-table thead th {
+            background: #f8fafc;
+            color: #374151;
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .executive-table tbody tr {
+            transition: all 0.15s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .executive-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .executive-table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border: none;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            color: #374151;
+        }
+
+        /* Refined Status Badges */
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-instalado {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .status-proceso {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 0.375rem 0.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 0.125rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+
+        .btn-view {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #dbeafe;
+        }
+
+        .btn-view:hover {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-edit {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+        }
+
+        .btn-edit:hover {
+            background: #dcfce7;
+            color: #14532d;
+        }
+
+        /* Enhanced Typography */
+        .currency-value {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-weight: 600;
+            color: #059669;
+            font-size: 0.8rem;
+        }
+
+        .quantity-value {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-weight: 600;
+            color: #dc2626;
+            font-size: 0.8rem;
+        }
+
+        .id-value {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-weight: 500;
+            color: #374151;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Pagination */
+        .pagination-section {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+        }
+
+        .pagination-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .pagination-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #1f2937;
+        }
+
+        .page-btn.active {
+            background: #00a2ff;
+            border-color: #00a2ff;
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .executive-header {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                font-size: 1.25rem;
+            }
+            
+            .filters-section {
+                padding: 1rem;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-container {
+                height: calc(100vh - 180px);
+            }
+            
+            .header-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-end;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .page-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #1f2937;
+        }
+
+        .page-btn.active {
+            background: #00a2ff;
+            border-color: #00a2ff;
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .executive-header {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                font-size: 1.25rem;
+            }
+            
+            .filters-section {
+                padding: 1rem;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-container {
+                height: calc(100vh - 180px);
+            }
+            
+            .header-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-end;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        /* Sistema de Filtrado Avanzado Fullscreen */
+        .advanced-search-fullscreen {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .search-header-fullscreen {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .search-title-fullscreen {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-toggle-fullscreen {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #374151;
+        }
+        
+        .search-toggle-fullscreen:hover {
+            background: #e5e7eb;
+        }
+        
+        .search-toggle-fullscreen.active {
+            background: #00a2ff;
+            color: white;
+            border-color: #00a2ff;
+        }
+        
+        .global-search-fullscreen {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .global-search-fullscreen:focus {
+            border-color: #00a2ff;
+            box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+            outline: none;
+        }
+        
+        .column-filters-fullscreen {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .column-filters-fullscreen.active {
+            display: grid;
+        }
+        
+        .filter-actions-fullscreen {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .active-filters-fullscreen {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .filter-tag .remove-filter {
+            background: none;
+            border: none;
+            color: #1e40af;
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0;
+            margin-left: 0.25rem;
+        }
+        
+        .filter-tag .remove-filter:hover {
+            color: #1e3a8a;
+        }
+        
+        .column-filter {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .column-filter-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .column-filter-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .column-filter-input:focus {
+            border-color: #00a2ff;
+            box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.1);
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Executive Header -->
+    <div class="executive-header">
+        <div class="header-content">
+        <h1 class="header-title">
+            <i class="fas fa-database"></i>
+            Base de Datos PMO - Pantalla Completa
+        </h1>
+            <div class="header-meta">
+                <div class="records-count">
+                {% if is_paginated %}
+                    {{ page_obj.paginator.count }} registros totales
+                {% else %}
+                    {{ articulos.count }} registros
+                {% endif %}
+                </div>
+                <a href="javascript:window.close()" class="close-btn">
+                    <i class="fas fa-times"></i>
+                    Cerrar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Filtrado Avanzado Fullscreen -->
+    <div class="advanced-search-fullscreen">
+        <div class="search-header-fullscreen">
+            <h2 class="search-title-fullscreen">
+                <i class="fas fa-search"></i>
+                Búsqueda Avanzada - Pantalla Completa
+            </h2>
+            <button type="button" class="search-toggle-fullscreen" id="toggleColumnFiltersFullscreen">
+                <i class="fas fa-sliders-h"></i>
+                Filtros por Columna
+            </button>
+                </div>
+        
+        <form method="get" id="advancedSearchFormFullscreen">
+            <!-- Barra de Búsqueda Global -->
+                    <input type="text" 
+                   class="global-search-fullscreen" 
+                   name="q" 
+                   value="{{ request.GET.q }}"
+                   placeholder="Buscar en toda la base de datos... (ID PMO, proyecto, proveedor, etc.)"
+                   id="globalSearchFullscreen">
+            
+            <!-- Filtros por Columna -->
+            <div class="column-filters-fullscreen" id="columnFiltersFullscreen">
+                <div class="column-filter">
+                    <label class="column-filter-label">Año</label>
+                    <input type="number" name="año" value="{{ request.GET.año }}" 
+                           placeholder="2024" class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Artículo</label>
+                    <input type="text" name="articulo" value="{{ request.GET.articulo }}" 
+                           placeholder="Código..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Descripción</label>
+                    <input type="text" name="descripcion" value="{{ request.GET.descripcion }}" 
+                           placeholder="Descripción..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Proveedor</label>
+                    <input type="text" name="proveedor" value="{{ request.GET.proveedor }}" 
+                           placeholder="Proveedor..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Proy. Recibo</label>
+                    <input type="text" name="proyecto_recibo" value="{{ request.GET.proyecto_recibo }}" 
+                           placeholder="Proyecto..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Orden Compra</label>
+                    <input type="text" name="orden_compra" value="{{ request.GET.orden_compra }}" 
+                           placeholder="Orden..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">ID PMO</label>
+                    <input type="text" name="id_pmo" value="{{ request.GET.id_pmo }}" 
+                           placeholder="ID PMO..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Proyecto</label>
+                    <input type="text" name="nombre_proyecto" value="{{ request.GET.nombre_proyecto }}" 
+                           placeholder="Proyecto..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Manager</label>
+                    <input type="text" name="manager" value="{{ request.GET.manager }}" 
+                           placeholder="Manager..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Estatus</label>
+                    <input type="text" name="estatus" value="{{ request.GET.estatus }}" 
+                           placeholder="Estado..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">AVP</label>
+                    <input type="text" name="avp" value="{{ request.GET.avp }}" 
+                           placeholder="AVP..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Tipo</label>
+                    <input type="text" name="tipo" value="{{ request.GET.tipo }}" 
+                           placeholder="Tipo..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Fábrica</label>
+                    <input type="text" name="fabrica" value="{{ request.GET.fabrica }}" 
+                           placeholder="Fábrica..." class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Costo Min</label>
+                    <input type="number" name="costo_min" value="{{ request.GET.costo_min }}" 
+                           placeholder="0" step="0.01" class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Costo Max</label>
+                    <input type="number" name="costo_max" value="{{ request.GET.costo_max }}" 
+                           placeholder="999999" step="0.01" class="column-filter-input">
+                </div>
+                <div class="column-filter">
+                    <label class="column-filter-label">Exist. Min</label>
+                    <input type="number" name="existencia_min" value="{{ request.GET.existencia_min }}" 
+                           placeholder="0" class="column-filter-input">
+                </div>
+            </div>
+            
+            <!-- Filtros Activos -->
+            <div class="active-filters-fullscreen" id="activeFiltersFullscreen"></div>
+            
+            <!-- Acciones -->
+                    <div class="filter-actions-fullscreen">
+                <button type="button" class="btn-executive btn-secondary" onclick="clearAllFiltersFullscreen()">
+                    <i class="fas fa-eraser"></i>
+                    Limpiar Todo
+                        </button>
+                <button type="submit" class="btn-executive btn-primary">
+                    <i class="fas fa-search"></i>
+                    Buscar
+                </button>
+                <button type="button" class="btn-executive btn-success" onclick="exportFullscreen()">
+                    <i class="fas fa-download"></i>
+                    Excel
+                        </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stats-item">
+            <i class="fas fa-table"></i>
+            <span>23 columnas visualizadas</span>
+        </div>
+        <div class="stats-item">
+            <i class="fas fa-eye"></i>
+            <span>
+                {% if is_paginated %}
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                {% else %}
+                    Página única
+                {% endif %}
+            </span>
+        </div>
+        <div class="stats-item">
+            <i class="fas fa-filter"></i>
+            <span>
+                {% count_active_filters request as filters_count %}
+                {% pluralize_filtros filters_count %}
+            </span>
+        </div>
+    </div>
+
+    <!-- Executive Table -->
+    {% if articulos %}
+        <div class="table-container">
+            <table class="executive-table">
+                <thead>
+                    <tr>
+                        <th style="min-width: 60px;">#</th>
+                        <th style="min-width: 80px;">Año</th>
+                        <th style="min-width: 120px;">Artículo</th>
+                        <th style="min-width: 200px;">Descripción</th>
+                        <th style="min-width: 150px;">Proveedor</th>
+                        <th style="min-width: 200px;">Proyecto Recibo</th>
+                        <th style="min-width: 120px;">Orden Compra</th>
+                        <th style="min-width: 150px;">ID PMO</th>
+                        <th style="min-width: 200px;">Proyecto</th>
+                        <th style="min-width: 150px;">Manager</th>
+                        <th style="min-width: 120px;">Estatus</th>
+                        <th style="min-width: 120px;">Fecha Impl.</th>
+                        <th style="min-width: 180px;">Historial</th>
+                        <th style="min-width: 180px;">Observaciones</th>
+                        <th style="min-width: 150px;">Retrasos</th>
+                        <th style="min-width: 120px;">AVP</th>
+                        <th style="min-width: 100px;">Tipo</th>
+                        <th style="min-width: 100px;">Fábrica</th>
+                        <th style="min-width: 140px;">Costo Unitario</th>
+                        <th style="min-width: 120px;">Cant. Embarcada</th>
+                        <th style="min-width: 130px;">Costo Salida</th>
+                        <th style="min-width: 120px;">Existencia</th>
+                        <th style="min-width: 140px;">Costo Existencias</th>
+                        <th style="min-width: 100px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for articulo in articulos %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ articulo.año|default:"-" }}</td>
+                        <td>{{ articulo.articulo|default:"-" }}</td>
+                        <td>{{ articulo.descripcion|truncatechars:50|default:"-" }}</td>
+                        <td>{{ articulo.proveedor|default:"-" }}</td>
+                        <td>{{ articulo.nombre_proyecto_recibo|truncatechars:50|default:"-" }}</td>
+                        <td>{{ articulo.orden_compra|default:"-" }}</td>
+                        <td>
+                            <span class="id-value">{{ articulo.id_pmo|default:"-" }}</span>
+                        </td>
+                        <td>{{ articulo.nombre_proyecto|truncatechars:50|default:"-" }}</td>
+                        <td>{{ articulo.program_manager|default:"-" }}</td>
+                        <td>
+                            {% if articulo.estatus_pmo_texto %}
+                                {% if "instalado" in articulo.estatus_pmo_texto|lower %}
+                                    <span class="status-badge status-instalado">
+                                        <i class="fas fa-check-circle"></i>
+                                        {{ articulo.estatus_pmo_texto }}
+                                    </span>
+                                {% elif "pendiente" in articulo.estatus_pmo_texto|lower %}
+                                    <span class="status-badge status-pendiente">
+                                        <i class="fas fa-clock"></i>
+                                        {{ articulo.estatus_pmo_texto }}
+                                    </span>
+                                {% elif "proceso" in articulo.estatus_pmo_texto|lower %}
+                                    <span class="status-badge status-proceso">
+                                        <i class="fas fa-cog fa-spin"></i>
+                                        {{ articulo.estatus_pmo_texto }}
+                                    </span>
+                            {% else %}
+                                    <span class="status-badge status-proceso">
+                                        {{ articulo.estatus_pmo_texto }}
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                <span class="status-badge status-proceso">Sin estado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ articulo.fecha_implementacion|default:"-" }}</td>
+                        <td>{{ articulo.historial|truncatechars:40|default:"-" }}</td>
+                        <td>{{ articulo.observaciones|truncatechars:40|default:"-" }}</td>
+                        <td>{{ articulo.retrasos_salida|truncatechars:40|default:"-" }}</td>
+                        <td>{{ articulo.avp|default:"-" }}</td>
+                        <td>{{ articulo.tipo|default:"-" }}</td>
+                        <td>{{ articulo.fabrica_texto|default:"-" }}</td>
+                        <td>
+                            {% if articulo.costo_unitario_distribucion %}
+                                <span class="currency-value">${{ articulo.costo_unitario_distribucion|floatformat:2 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if articulo.cantidad_embarcada %}
+                                <span class="quantity-value">{{ articulo.cantidad_embarcada|floatformat:0 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if articulo.costo_salida_mxn %}
+                                <span class="currency-value">${{ articulo.costo_salida_mxn|floatformat:2 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if articulo.existencia_actual %}
+                                <span class="quantity-value">{{ articulo.existencia_actual|floatformat:0 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if articulo.costo_mxn_existencias %}
+                                <span class="currency-value">${{ articulo.costo_mxn_existencias|floatformat:2 }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                                <a href="{% url 'inventario:articulo_detail' articulo.pk %}" 
+                               class="action-btn btn-view" 
+                               title="Ver detalle">
+                                    <i class="fas fa-eye"></i>
+                                Ver
+                                </a>
+                                <a href="{% url 'inventario:articulo_update' articulo.pk %}" 
+                               class="action-btn btn-edit" 
+                               title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                Editar
+                                </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No se encontraron registros</h3>
+            <p>Intenta ajustar los filtros de búsqueda</p>
+        </div>
+    {% endif %}
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination-section">
+            <div class="pagination-info">
+                Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+            </div>
+            <div class="pagination-nav">
+                    {% if page_obj.has_previous %}
+                    <a href="?{% if request.GET.año %}año={{ request.GET.año }}&{% endif %}{% if request.GET.id_pmo %}id_pmo={{ request.GET.id_pmo }}&{% endif %}{% if request.GET.nombre_proyecto %}nombre_proyecto={{ request.GET.nombre_proyecto }}&{% endif %}{% if request.GET.estatus %}estatus={{ request.GET.estatus }}&{% endif %}{% if request.GET.fabrica %}fabrica={{ request.GET.fabrica }}&{% endif %}page=1" class="page-btn">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                    <a href="?{% if request.GET.año %}año={{ request.GET.año }}&{% endif %}{% if request.GET.id_pmo %}id_pmo={{ request.GET.id_pmo }}&{% endif %}{% if request.GET.nombre_proyecto %}nombre_proyecto={{ request.GET.nombre_proyecto }}&{% endif %}{% if request.GET.estatus %}estatus={{ request.GET.estatus }}&{% endif %}{% if request.GET.fabrica %}fabrica={{ request.GET.fabrica }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                    {% endif %}
+                    
+                <span class="page-btn active">
+                            {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                        </span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?{% if request.GET.año %}año={{ request.GET.año }}&{% endif %}{% if request.GET.id_pmo %}id_pmo={{ request.GET.id_pmo }}&{% endif %}{% if request.GET.nombre_proyecto %}nombre_proyecto={{ request.GET.nombre_proyecto }}&{% endif %}{% if request.GET.estatus %}estatus={{ request.GET.estatus }}&{% endif %}{% if request.GET.fabrica %}fabrica={{ request.GET.fabrica }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                    <a href="?{% if request.GET.año %}año={{ request.GET.año }}&{% endif %}{% if request.GET.id_pmo %}id_pmo={{ request.GET.id_pmo }}&{% endif %}{% if request.GET.nombre_proyecto %}nombre_proyecto={{ request.GET.nombre_proyecto }}&{% endif %}{% if request.GET.estatus %}estatus={{ request.GET.estatus }}&{% endif %}{% if request.GET.fabrica %}fabrica={{ request.GET.fabrica }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="page-btn">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                    {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+        // === SISTEMA DE FILTRADO AVANZADO FULLSCREEN ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggleColumnFiltersFullscreen');
+            const columnFilters = document.getElementById('columnFiltersFullscreen');
+            const globalSearch = document.getElementById('globalSearchFullscreen');
+            const activeFiltersContainer = document.getElementById('activeFiltersFullscreen');
+            const form = document.getElementById('advancedSearchFormFullscreen');
+
+            // Toggle filtros por columna
+            toggleBtn.addEventListener('click', function() {
+                columnFilters.classList.toggle('active');
+                toggleBtn.classList.toggle('active');
+                
+                if (columnFilters.classList.contains('active')) {
+                    toggleBtn.innerHTML = '<i class="fas fa-times"></i> Ocultar Filtros';
+                } else {
+                    toggleBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Filtros por Columna';
+                }
+            });
+
+            // Búsqueda en tiempo real para búsqueda global
+            let globalSearchTimeout;
+            globalSearch.addEventListener('input', function() {
+                clearTimeout(globalSearchTimeout);
+                globalSearchTimeout = setTimeout(() => {
+                    updateActiveFiltersFullscreen();
+                }, 300);
+            });
+
+            // Actualizar filtros activos en tiempo real
+            const filterInputs = document.querySelectorAll('.column-filter-input');
+        filterInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                    updateActiveFiltersFullscreen();
+            });
+        });
+
+            // Función para actualizar filtros activos
+            function updateActiveFiltersFullscreen() {
+                activeFiltersContainer.innerHTML = '';
+                
+                // Filtro global
+                if (globalSearch.value.trim()) {
+                    addFilterTagFullscreen('Búsqueda Global', globalSearch.value, 'q');
+                }
+                
+                // Filtros por columna
+                filterInputs.forEach(input => {
+                    if (input.value.trim()) {
+                        const label = input.parentElement.querySelector('.column-filter-label').textContent;
+                        addFilterTagFullscreen(label, input.value, input.name);
+                    }
+                });
+                
+                // Mostrar/ocultar contenedor
+                if (activeFiltersContainer.children.length > 0) {
+                    activeFiltersContainer.style.display = 'flex';
+                } else {
+                    activeFiltersContainer.style.display = 'none';
+                }
+            }
+
+            // Agregar tag de filtro activo
+            function addFilterTagFullscreen(label, value, inputName) {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `
+                    <span><strong>${label}:</strong> ${value}</span>
+                    <button type="button" class="remove-filter" onclick="removeFilterFullscreen('${inputName}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                activeFiltersContainer.appendChild(tag);
+            }
+
+            // Función global para remover filtros
+            window.removeFilterFullscreen = function(inputName) {
+                const input = document.querySelector(`[name="${inputName}"]`);
+                if (input) {
+                    input.value = '';
+                    updateActiveFiltersFullscreen();
+                }
+            };
+
+            // Limpiar todos los filtros
+            window.clearAllFiltersFullscreen = function() {
+                // Limpiar búsqueda global
+                globalSearch.value = '';
+                
+                // Limpiar filtros por columna
+                filterInputs.forEach(input => {
+                    input.value = '';
+                });
+                
+                // Actualizar filtros activos
+                updateActiveFiltersFullscreen();
+                
+                // Redirect to clean URL
+                window.location.href = '{% url "inventario:articulo_list_fullscreen" %}';
+            };
+
+            // Auto-submit con debounce
+            let formSubmitTimeout;
+            function autoSubmitForm() {
+                clearTimeout(formSubmitTimeout);
+                formSubmitTimeout = setTimeout(() => {
+                    // Solo auto-submit si hay filtros aplicados
+                    if (hasActiveFilters()) {
+                        form.submit();
+                    }
+                }, 1000); // 1 segundo de delay
+            }
+
+            // Verificar si hay filtros activos
+            function hasActiveFilters() {
+                if (globalSearch.value.trim()) return true;
+                
+                for (let input of filterInputs) {
+                    if (input.value.trim()) return true;
+                }
+                
+                return false;
+            }
+
+            // Event listeners para auto-submit
+            globalSearch.addEventListener('input', autoSubmitForm);
+            filterInputs.forEach(input => {
+                input.addEventListener('input', autoSubmitForm);
+            });
+
+            // Inicializar filtros activos
+            updateActiveFiltersFullscreen();
+
+            // Enfocar en búsqueda global con Ctrl+F
+            document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                    globalSearch.focus();
+                }
+            });
+        });
+
+        // Export functionality
+        function exportFullscreen() {
+            const form = document.getElementById('advancedSearchFormFullscreen');
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+            
+            for (let [key, value] of formData.entries()) {
+                if (value) params.append(key, value);
+            }
+            
+            params.append('export', 'excel');
+            window.location.href = `{% url 'inventario:exportar_articulos' %}?${params.toString()}`;
+        }
+
+        // Loading states for better UX
+        if (document.getElementById('advancedSearchFormFullscreen')) {
+            document.getElementById('advancedSearchFormFullscreen').addEventListener('submit', function() {
+                this.classList.add('loading');
+            });
+        }
+    </script>
+</body>
+</html> 

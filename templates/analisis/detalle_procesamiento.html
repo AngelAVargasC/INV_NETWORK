@@ -1,0 +1,1186 @@
+{% extends 'base.html' %}
+
+{% block title %}Procesamiento #{{ procesamiento.id }} - Análisis{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --att-blue: #00a8cc;
+    --att-dark-blue: #0066cc;
+    --att-light-blue: #e6f7ff;
+    --att-orange: #ff6600;
+    --att-gray: #6c757d;
+    --att-light-gray: #f8f9fa;
+    --att-white: #ffffff;
+    --att-success: #28a745;
+    --att-warning: #ffc107;
+    --att-danger: #dc3545;
+}
+
+.detalle-container {
+    padding: 2rem;
+    background: var(--att-light-gray);
+    min-height: 100vh;
+    margin-top: 0px;
+}
+
+.page-header {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--att-blue);
+}
+
+.detalle-card {
+    background: var(--att-white);
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+}
+
+.btn-back {
+    background: linear-gradient(135deg, var(--att-white), #f8f9fa);
+    color: var(--att-dark-blue);
+    border: 2px solid var(--sidebar-blue);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(26, 115, 232, 0.15);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-back::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(26, 115, 232, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-back:hover::before {
+    left: 100%;
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, var(--att-light-blue), #e3f2fd);
+    color: var(--att-dark-blue);
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.25);
+    border-color: var(--att-blue);
+}
+
+.procesamiento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.procesamiento-title h1 {
+    color: var(--att-dark-blue);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.procesamiento-meta {
+    color: var(--att-gray);
+    font-size: 1rem;
+}
+
+.procesamiento-meta i {
+    color: var(--att-blue);
+}
+
+.estado-badge {
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.estado-completado {
+    background: #d4edda;
+    color: var(--att-success);
+    border: 2px solid #c3e6cb;
+}
+
+.estado-procesando {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffeaa7;
+}
+
+.estado-error {
+    background: #f8d7da;
+    color: var(--att-danger);
+    border: 2px solid #f1b0b7;
+}
+
+.files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.file-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid var(--att-blue);
+    transition: all 0.3s ease;
+}
+
+.file-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.file-card.aging { border-left-color: var(--att-blue); }
+.file-card.pipeline { border-left-color: var(--att-success); }
+.file-card.oracle { border-left-color: var(--att-warning); }
+
+.file-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.file-icon.aging { color: var(--att-blue); }
+.file-icon.pipeline { color: var(--att-success); }
+.file-icon.oracle { color: var(--att-warning); }
+
+.file-title {
+    font-weight: 600;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.file-name {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.3rem;
+}
+
+.stat-label {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.logs-section {
+    background: #1a202c;
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    border: 1px solid #2d3748;
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.logs-title {
+    color: var(--att-dark-blue);
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.log-entry {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.log-entry:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
+}
+
+.log-timestamp {
+    color: #a0aec0;
+    font-weight: 500;
+    margin-right: 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0.8;
+}
+
+.log-level {
+    font-weight: 700;
+    margin-right: 1rem;
+    min-width: 60px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.log-message {
+    flex: 1;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+
+.log-multiline {
+    display: block !important;
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: #4299e1 !important;
+    margin-bottom: 1rem;
+}
+
+.log-content {
+    width: 100%;
+}
+
+.log-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-title {
+    color: #90cdf4;
+    font-weight: 600;
+    margin-left: 1rem;
+}
+
+.log-text {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.log-text br {
+    display: block;
+    margin: 0.2rem 0;
+}
+
+.log-INFO { 
+    border-left-color: #4299e1;
+}
+.log-INFO .log-level { color: #90cdf4; }
+
+.log-SUCCESS { 
+    border-left-color: #48bb78;
+}
+.log-SUCCESS .log-level { color: #68d391; }
+
+.log-WARNING { 
+    border-left-color: #ed8936;
+}
+.log-WARNING .log-level { color: #f6e05e; }
+
+.log-ERROR { 
+    border-left-color: #f56565;
+    background-color: rgba(245, 101, 101, 0.1);
+}
+.log-ERROR .log-level { color: #fc8181; }
+
+.processing-log {
+    animation: pulse 2s infinite;
+    border-left-color: #ed8936 !important;
+    background-color: rgba(237, 137, 54, 0.1);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Scrollbar personalizado para logs */
+.logs-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.logs-section::-webkit-scrollbar-track {
+    background: #2d3748;
+    border-radius: 4px;
+}
+
+.logs-section::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 4px;
+}
+
+.logs-section::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.btn-custom {
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-success-custom {
+    background: linear-gradient(135deg, var(--att-success), #20c997);
+    color: var(--att-white);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: var(--att-white);
+    text-decoration: none;
+}
+
+.btn-warning-custom {
+    background: var(--att-white);
+    color: var(--att-warning);
+    border: 2px solid var(--att-warning);
+}
+
+.btn-warning-custom:hover {
+    background: var(--att-warning);
+    color: var(--att-white);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.btn-info-custom {
+    background: var(--att-white);
+    color: var(--att-blue);
+    border: 2px solid var(--att-blue);
+}
+
+.btn-info-custom:hover {
+    background: var(--att-blue);
+    color: var(--att-white);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.btn-secondary-custom {
+    background: var(--att-white);
+    color: var(--att-gray);
+    border: 2px solid var(--att-gray);
+}
+
+.btn-secondary-custom:hover {
+    background: var(--att-gray);
+    color: var(--att-white);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.btn-danger-custom {
+    background: var(--att-white);
+    color: var(--att-danger);
+    border: 2px solid var(--att-danger);
+}
+
+.btn-danger-custom:hover {
+    background: var(--att-danger);
+    color: var(--att-white);
+    transform: translateY(-2px);
+}
+
+/* Progress indicator para procesamientos en curso */
+.processing-indicator {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.processing-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    font-size: 1.2rem;
+    color: var(--att-warning);
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Modal styles mejorados */
+.delete-modal {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.delete-modal-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: var(--att-white);
+    border-bottom: none;
+    padding: 2rem 2.5rem 1.5rem;
+}
+
+.delete-modal-header .modal-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.delete-modal-body {
+    padding: 2rem 2.5rem;
+    background: #f8f9fa;
+}
+
+.warning-content {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    border-radius: 12px;
+}
+
+.warning-icon {
+    font-size: 2.5rem;
+    color: #856404;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.warning-text h6 {
+    color: #856404;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.warning-text p {
+    color: #856404;
+    margin-bottom: 1rem;
+}
+
+.warning-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.warning-list li {
+    color: #856404;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.procesamiento-info {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.info-title {
+    color: var(--att-dark-blue);
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid var(--att-blue);
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--att-gray);
+    font-size: 0.9rem;
+}
+
+.info-value {
+    font-weight: 700;
+    color: var(--att-dark-blue);
+    font-size: 0.95rem;
+}
+
+.info-value.estado-completado {
+    color: var(--att-success);
+}
+
+.info-value.estado-error {
+    color: var(--att-danger);
+}
+
+.info-value.estado-procesando {
+    color: var(--att-warning);
+}
+
+.delete-modal-footer {
+    background: var(--att-white);
+    border-top: 1px solid #dee2e6;
+    padding: 1.5rem 2.5rem 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-cancel {
+    background: var(--att-white);
+    color: var(--att-gray);
+    border: 2px solid #dee2e6;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-cancel:hover {
+    background: #f8f9fa;
+    border-color: var(--att-gray);
+    color: var(--att-gray);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: var(--att-white);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    color: var(--att-white);
+    text-decoration: none;
+}
+
+/* Modal vanilla styles */
+#confirmDeleteModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1055;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-dialog {
+    background: white;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    margin: 0;
+}
+
+#confirmDeleteModal.show .modal-dialog {
+    transform: scale(1);
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .detalle-container {
+        padding: 1rem;
+    }
+    
+    .procesamiento-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .files-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-custom {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detalle-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.file-card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.file-card:nth-child(1) { animation-delay: 0.1s; }
+.file-card:nth-child(2) { animation-delay: 0.2s; }
+.file-card:nth-child(3) { animation-delay: 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detalle-container">
+    <a href="{% url 'analisis:dashboard' %}" class="btn-back">
+        <i class="fas fa-arrow-left"></i>Volver al Dashboard
+    </a>
+
+    <!-- Header del Procesamiento -->
+    <div class="detalle-card">
+        <div class="procesamiento-header">
+            <div class="procesamiento-title">
+                <h1>
+                    <i class="fas fa-cogs me-3"></i>
+                    Procesamiento #{{ procesamiento.id }}
+                </h1>
+                <div class="procesamiento-meta">
+                    <i class="fas fa-user me-2"></i>{{ procesamiento.usuario.username }}
+                    <i class="fas fa-calendar ms-3 me-2"></i>{{ procesamiento.fecha_procesamiento|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+            <div>
+                <span class="estado-badge estado-{{ procesamiento.estado }}">
+                    {{ procesamiento.get_estado_display }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Indicator para procesamientos en curso -->
+        {% if procesamiento.estado == 'procesando' %}
+        <div class="processing-indicator">
+            <i class="fas fa-spinner processing-spinner"></i>
+            <strong>Procesamiento en curso...</strong>
+            <p class="mb-0 mt-2">Esta página se actualizará automáticamente cada 5 segundos</p>
+        </div>
+        {% endif %}
+
+        <!-- Archivos Procesados -->
+        <div class="files-grid">
+            <div class="file-card aging">
+                <div class="file-icon aging">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="file-title">Aging:</div>
+                <div class="file-name">{{ procesamiento.archivo_aging }}</div>
+            </div>
+            <div class="file-card pipeline">
+                <div class="file-icon pipeline">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="file-title">Pipeline:</div>
+                <div class="file-name">{{ procesamiento.archivo_pipeline }}</div>
+            </div>
+            <div class="file-card oracle">
+                <div class="file-icon oracle">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="file-title">Oracle:</div>
+                <div class="file-name">{{ procesamiento.archivo_oracle }}</div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        {% if procesamiento.estado == 'completado' %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.total_registros_aging|default:0 }}</div>
+                <div class="stat-label">Registros Aging</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.registros_actualizados_pipeline|default:0 }}</div>
+                <div class="stat-label">Actualizados Pipeline</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.registros_actualizados_oracle|default:0 }}</div>
+                <div class="stat-label">Actualizados Oracle</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.registros_no_coincidentes|default:0 }}</div>
+                <div class="stat-label">Sin Coincidencias</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.tasa_exito_total|default:0 }}%</div>
+                <div class="stat-label">Tasa de Éxito</div>
+            </div>
+            {% if procesamiento.tiempo_procesamiento %}
+            <div class="stat-card">
+                <div class="stat-value">{{ procesamiento.tiempo_procesamiento|floatformat:2 }}s</div>
+                <div class="stat-label">Tiempo</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+            {% if procesamiento.estado == 'completado' and procesamiento.archivo_resultado %}
+                <a href="{% url 'analisis:descargar_archivo' procesamiento.pk 'resultado' %}" 
+                   class="btn-custom btn-success-custom">
+                    <i class="fas fa-download"></i>Descargar Resultado
+                </a>
+                {% if procesamiento.archivo_no_coincidentes %}
+                <a href="{% url 'analisis:descargar_archivo' procesamiento.pk 'no_coincidentes' %}" 
+                   class="btn-custom btn-warning-custom">
+                    <i class="fas fa-download"></i>No Coincidentes
+                </a>
+                {% endif %}
+            {% endif %}
+            
+            <a href="{% url 'analisis:exportar_logs' procesamiento.pk %}" 
+               class="btn-custom btn-info-custom">
+                <i class="fas fa-file-alt"></i>Exportar Logs
+            </a>
+            
+            <a href="{% url 'analisis:historial' %}" 
+               class="btn-custom btn-secondary-custom">
+                <i class="fas fa-list"></i>Ver Historial
+            </a>
+            
+            {% if procesamiento.estado != 'procesando' %}
+                <button class="btn-custom btn-danger-custom" 
+                        onclick="showDeleteModal()">
+                    <i class="fas fa-trash"></i>Eliminar
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Logs del Procesamiento -->
+    <div class="detalle-card">
+        <div class="logs-header">
+            <h3 class="logs-title">
+                <i class="fas fa-terminal"></i>
+                Logs del Procesamiento
+            </h3>
+        </div>
+        
+        <div class="logs-section" id="logsContainer">
+            {% if logs_detallados %}
+                {% for log in logs_detallados %}
+                    <div class="log-entry log-{{ log.nivel }}">
+                        <span class="log-timestamp">[{{ log.timestamp|date:"H:i:s" }}]</span>
+                        <span class="log-level">{{ log.nivel }}:</span>
+                        <span class="log-message">{{ log.mensaje }}</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="log-entry log-INFO">
+                    <span class="log-timestamp">[{{ procesamiento.fecha_procesamiento|date:"H:i:s" }}]</span>
+                    <span class="log-level">INFO:</span>
+                    <span class="log-message">Procesamiento iniciado</span>
+                </div>
+                
+                {% if procesamiento.logs_procesamiento %}
+                    <div class="log-entry log-INFO log-multiline">
+                        <div class="log-content">
+                            <div class="log-header">
+                                <span class="log-timestamp">[{{ procesamiento.fecha_procesamiento|date:"H:i:s" }}]</span>
+                                <span class="log-level">LOG:</span>
+                                <span class="log-title">Detalles del Procesamiento</span>
+                            </div>
+                            <div class="log-text">{{ procesamiento.logs_procesamiento|linebreaksbr }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if procesamiento.estado == 'completado' %}
+                    <div class="log-entry log-SUCCESS">
+                        <span class="log-timestamp">[{{ procesamiento.fecha_procesamiento|date:"H:i:s" }}]</span>
+                        <span class="log-level">SUCCESS:</span>
+                        <span class="log-message">
+                            Procesamiento completado exitosamente. 
+                            {{ procesamiento.total_registros_aging|default:0 }} registros procesados, 
+                            {{ procesamiento.registros_actualizados_pipeline|default:0 }} actualizados con pipeline,
+                            {{ procesamiento.registros_actualizados_oracle|default:0 }} actualizados con oracle.
+                            Tasa de éxito: {{ procesamiento.tasa_exito_total|default:0 }}%
+                        </span>
+                    </div>
+                {% endif %}
+                
+                {% if procesamiento.estado == 'error' %}
+                    <div class="log-entry log-ERROR">
+                        <span class="log-timestamp">[{{ procesamiento.fecha_procesamiento|date:"H:i:s" }}]</span>
+                        <span class="log-level">ERROR:</span>
+                        <span class="log-message">
+                            Error durante el procesamiento. Verifique los archivos de entrada y vuelva a intentar.
+                        </span>
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            {% if procesamiento.estado == 'procesando' %}
+                <div class="log-entry log-WARNING processing-log">
+                    <span class="log-timestamp">[Tiempo real]</span>
+                    <span class="log-level">INFO:</span>
+                    <span class="log-message">
+                        <i class="fas fa-spinner fa-spin me-2"></i>Procesamiento en curso... Esto puede tomar varios minutos dependiendo del tamaño de los archivos.
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div id="confirmDeleteModal" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content delete-modal">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-3"></i>
+                    Confirmar Eliminación de Procesamiento
+                </h5>
+                <button type="button" class="btn-close" onclick="closeDeleteModal()" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body delete-modal-body">
+                <div class="warning-content">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="warning-text">
+                        <h6><strong>¿Estás seguro de que deseas eliminar este procesamiento?</strong></h6>
+                        <p class="mb-3">Esta acción es <strong>irreversible</strong> y eliminará permanentemente:</p>
+                        <ul class="warning-list">
+                            <li><i class="fas fa-file-excel text-danger me-2"></i>Todos los archivos de resultado generados</li>
+                            <li><i class="fas fa-history text-danger me-2"></i>Todo el historial de logs del procesamiento</li>
+                            <li><i class="fas fa-chart-bar text-danger me-2"></i>Todas las estadísticas y métricas asociadas</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="procesamiento-info">
+                    <h6 class="info-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Información del Procesamiento
+                    </h6>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">ID:</span>
+                            <span class="info-value">#{{ procesamiento.id }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Fecha:</span>
+                            <span class="info-value">{{ procesamiento.fecha_procesamiento|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Estado:</span>
+                            <span class="info-value estado-{{ procesamiento.estado }}">
+                                {{ procesamiento.get_estado_display }}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Archivo:</span>
+                            <span class="info-value">{{ procesamiento.archivo_aging|truncatechars:30 }}</span>
+                        </div>
+                        {% if procesamiento.total_registros_aging %}
+                        <div class="info-item">
+                            <span class="info-label">Registros:</span>
+                            <span class="info-value">{{ procesamiento.total_registros_aging }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Éxito:</span>
+                            <span class="info-value">{{ procesamiento.tasa_exito_total|default:0 }}%</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeDeleteModal()">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <form method="post" action="{% url 'analisis:eliminar_procesamiento' procesamiento.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-2"></i>Eliminar Definitivamente
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Función para mostrar el modal de eliminación
+function showDeleteModal() {
+    const modal = document.getElementById('confirmDeleteModal');
+    if (modal) {
+        // Mostrar modal como overlay centrado
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        modal.style.zIndex = '1055';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        
+        // Prevenir scroll del body
+        document.body.style.overflow = 'hidden';
+        
+        // Agregar clase para animaciones
+        modal.classList.add('show');
+    }
+}
+
+// Función para cerrar el modal
+function closeDeleteModal() {
+    const modal = document.getElementById('confirmDeleteModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        
+        // Restaurar scroll del body
+        document.body.style.overflow = '';
+        
+        // Reset del botón de confirmación
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmBtn && confirmBtn.classList.contains('confirmed')) {
+            confirmBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar Definitivamente';
+            confirmBtn.classList.remove('confirmed');
+            confirmBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener para cerrar modal al hacer clic fuera
+    document.getElementById('confirmDeleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Event listener para cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('confirmDeleteModal');
+            if (modal.style.display === 'flex') {
+                closeDeleteModal();
+            }
+        }
+    });
+    {% if procesamiento.estado == 'procesando' %}
+    // Auto-refresh para procesamientos en curso
+    function actualizarEstado() {
+        fetch('{% url "analisis:estado_procesamiento_ajax" procesamiento.pk %}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.estado !== 'procesando') {
+                    location.reload();
+                }
+            })
+            .catch(error => console.log('Error:', error));
+    }
+    
+    // Actualizar cada 5 segundos
+    setInterval(actualizarEstado, 5000);
+    {% endif %}
+    
+    // Auto-scroll para logs
+    const logsContainer = document.getElementById('logsContainer');
+    if (logsContainer) {
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+    }
+    
+    // Highlight para logs recientes
+    const logEntries = document.querySelectorAll('.log-entry');
+    logEntries.forEach((entry, index) => {
+        entry.style.opacity = '0';
+        entry.style.transform = 'translateX(-10px)';
+        setTimeout(() => {
+            entry.style.transition = 'all 0.3s ease';
+            entry.style.opacity = '1';
+            entry.style.transform = 'translateX(0)';
+        }, index * 50);
+    });
+    
+    // Asegurar que el modal esté oculto al cargar la página
+    const deleteModal = document.getElementById('confirmDeleteModal');
+    if (deleteModal) {
+        // Limpiar estado inicial
+        deleteModal.classList.remove('show');
+        deleteModal.setAttribute('aria-hidden', 'true');
+        deleteModal.style.display = 'none';
+        
+        // Remover cualquier backdrop residual
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+        
+        // Event listener para cuando se cierre el modal
+        deleteModal.addEventListener('hidden.bs.modal', function () {
+            this.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Limpiar backdrops
+            const remainingBackdrops = document.querySelectorAll('.modal-backdrop');
+            remainingBackdrops.forEach(backdrop => backdrop.remove());
+        });
+    }
+    
+    // Confirmar eliminación con doble verificación
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Cambiar el botón para confirmar
+            if (!this.classList.contains('confirmed')) {
+                this.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>¡Confirmar Eliminación!';
+                this.classList.add('confirmed');
+                this.style.background = 'linear-gradient(135deg, #bd2130, #a71e2a)';
+                
+                // Auto-reset después de 3 segundos
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-trash me-2"></i>Eliminar Definitivamente';
+                    this.classList.remove('confirmed');
+                    this.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                }, 3000);
+            } else {
+                // Proceder con la eliminación enviando el formulario
+                this.form.submit();
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

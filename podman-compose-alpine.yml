@@ -1,0 +1,32 @@
+version: '3.8'
+
+# =============================================================================
+# AT&T INVENTARIO - DESPLIEGUE ESTILO EQUIPO (ALPINE + SIMPLIFICADO)
+# =============================================================================
+# Uso: podman-compose -f podman-compose-alpine.yml up -d
+
+services:
+  # Aplicación Django Alpine (siguiendo estilo del equipo)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    container_name: att_inventario_alpine
+    restart: unless-stopped
+    ports:
+      - "8449:8449"  # Puerto exacto del equipo
+    volumes:
+      - ./media:/code/media
+      - ./logs:/code/logs
+      - ./staticfiles:/code/staticfiles
+    env_file:
+      - production.env  # Variables como el equipo
+    networks:
+      - att_network
+
+# Network simple
+networks:
+  att_network:
+    driver: bridge
+
+# Nota: MySQL externo en 10.150.153.31:3306 (no containerizado) 

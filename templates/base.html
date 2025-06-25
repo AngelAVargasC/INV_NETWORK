@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}AT&T Executive Portal{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% load static %}{% static 'images/att-favicon.ico' %}">
+    
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="{% load static %}{% static 'css/att-global.css' %}">
+    <link rel="stylesheet" href="{% load static %}{% static 'fontawesome-free-6.7.2-web/css/all.min.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Meta Tags Ejecutivos -->
+    <meta name="description" content="Portal Ejecutivo AT&T - Sistema de Gestión PMO">
+    <meta name="author" content="AT&T Corporation">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#00a2ff">
+</head>
+<body class="{% if not user.is_authenticated %}login-page{% endif %}">
+    {% if user.is_authenticated %}
+    <!-- Layout Ejecutivo con Sidebar -->
+    <div class="executive-container">
+        <!-- Sidebar Ejecutivo AT&T -->
+        <nav class="executive-sidebar" id="sidebar">
+            <!-- Header del Sidebar -->
+            <div class="sidebar-header">
+                <div class="att-brand">
+                    <div class="att-logo">
+                        <img src="{% load static %}{% static 'images/origen_nf_white.png' %}" alt="AT&T" class="att-logo-img">
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title">Inventario Network</span>
+                        <span class="brand-subtitle">PMO System</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenido del Sidebar -->
+            <div class="sidebar-content">
+                <!-- Perfil Ejecutivo -->
+                <div class="executive-profile">
+                    <div class="profile-avatar">
+                        {% if user_has_photo %}
+                            <img src="{{ user_profile.foto_perfil.url }}" alt="Avatar {{ user.get_full_name|default:user.username }}">
+                        {% else %}
+                            <div class="default-avatar">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                                            <div class="profile-info">
+                        <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="profile-role">{{ user_profile.get_area_display|default:"Executive" }}</div>
+                        <div class="profile-status">
+                            <span class="status-indicator active"></span>
+                            <span class="status-text">En línea</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navegación Ejecutiva -->
+                <div class="executive-navigation">
+                    <div class="nav-section">
+                        <div class="nav-section-title">Dashboard</div>
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <span class="nav-text">Panel Principal</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <div class="nav-section-title">Gestión PMO</div>
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="{% url 'inventario:dashboard' %}" class="nav-link {% if 'inventario' in request.resolver_match.namespace %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                    </div>
+                                    <span class="nav-text">Dashboard PMO</span>
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="{% url 'inventario:articulo_list' %}" class="nav-link">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <span class="nav-text">Base de Datos</span>
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="{% url 'inventario:importar_datos' %}" class="nav-link">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-file-upload"></i>
+                                    </div>
+                                    <span class="nav-text">Importar Datos</span>
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="{% url 'analisis:dashboard' %}" class="nav-link {% if 'analisis' in request.resolver_match.namespace %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <span class="nav-text">Análisis</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <div class="nav-section-title">Configuración</div>
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="{% url 'usuarios:perfil' %}" class="nav-link {% if 'usuarios' in request.resolver_match.namespace %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <span class="nav-text">Mi Perfil</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer del Sidebar -->
+            <div class="sidebar-footer">
+                <a href="{% url 'usuarios:logout' %}" class="logout-btn">
+                    <div class="logout-icon">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <span class="logout-text">Cerrar Sesión</span>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Contenido Principal Ejecutivo -->
+        <main class="executive-main">
+            <!-- Header Ejecutivo -->
+            <header class="executive-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="page-info">
+                            <h1 class="page-title">{% block page_title %}Dashboard Ejecutivo{% endblock %}</h1>
+                            <div class="breadcrumb">
+                                <span class="breadcrumb-item">AT&T</span>
+                                <i class="fas fa-chevron-right"></i>
+                                <span class="breadcrumb-item current">{% block breadcrumb %}Portal Ejecutivo{% endblock %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="header-right">
+                        <div class="header-actions">
+                            <!-- Notificaciones Ejecutivas -->
+                            <div class="action-item">
+                                <button class="action-btn notifications-btn" title="Notificaciones">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="notification-badge">3</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="action-item">
+                                <button class="action-btn quick-actions-btn" title="Acciones Rápidas">
+                                    <i class="fas fa-bolt"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Usuario Ejecutivo -->
+                            <div class="action-item user-executive">
+                                <div class="executive-user-menu">
+                                    <button class="executive-user-btn">
+                                        <div class="user-avatar-header">
+                                            {% if user_has_photo %}
+                                                <img src="{{ user_profile.foto_perfil.url }}" alt="Avatar {{ user.get_full_name|default:user.username }}">
+                                            {% else %}
+                                                <div class="default-avatar-header">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="user-details">
+                                            <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                                            <span class="user-role-header">{{ user_profile.get_area_display|default:"Executive" }}</span>
+                                        </div>
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    </button>
+                                    
+                                    <div class="executive-dropdown-menu">
+                                        <div class="dropdown-header">
+                                            <span class="dropdown-title">Cuenta Ejecutiva</span>
+                                        </div>
+                                        <div class="dropdown-items">
+                                            <a href="{% url 'usuarios:perfil' %}" class="dropdown-item">
+                                                <i class="fas fa-user-edit"></i>
+                                                <span>Mi Perfil</span>
+                                            </a>
+                                            <a href="{% url 'usuarios:logout' %}" class="dropdown-item logout">
+                                                <i class="fas fa-power-off"></i>
+                                                <span>Cerrar Sesión</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Mensajes del Sistema -->
+            {% if messages %}
+                <div class="executive-messages">
+                    {% for message in messages %}
+                        <div class="executive-alert alert-{{ message.tags }}">
+                            <div class="alert-icon">
+                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            </div>
+                            <div class="alert-content">
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button class="alert-dismiss">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Contenido de la Página -->
+            <section class="executive-content">
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+    
+    {% else %}
+    <!-- Página de Login -->
+    {% block login_content %}{% endblock %}
+    {% endif %}
+    
+    <!-- JavaScript Ejecutivo -->
+    <script src="{% load static %}{% static 'js/att-global.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        // Inicializar Portal Ejecutivo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Executive User Menu
+            const executiveUserBtn = document.querySelector('.executive-user-btn');
+            const executiveDropdown = document.querySelector('.executive-dropdown-menu');
+            
+            if (executiveUserBtn && executiveDropdown) {
+                executiveUserBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    executiveDropdown.classList.toggle('show');
+                });
+                
+                document.addEventListener('click', function() {
+                    executiveDropdown.classList.remove('show');
+                });
+            }
+            
+            // Cerrar alertas ejecutivas
+            document.querySelectorAll('.alert-dismiss').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.executive-alert').style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        this.closest('.executive-alert').remove();
+                    }, 300);
+                });
+            });
+            
+            // Auto-cerrar alertas después de 7 segundos (más tiempo para ejecutivos)
+            setTimeout(() => {
+                document.querySelectorAll('.executive-alert').forEach(alert => {
+                    if (!alert.classList.contains('alert-error')) {
+                        alert.style.transform = 'translateX(100%)';
+                        setTimeout(() => alert.remove(), 300);
+                    }
+                });
+            }, 7000);
+            
+            // Efectos de hover suaves para navegación
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            console.log('🏢 AT&T Executive Portal Loaded Successfully');
+        });
+    </script>
+    
+</body>
+</html> 

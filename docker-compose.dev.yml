@@ -1,0 +1,60 @@
+version: '3.8'
+
+# Configuración específica para DESARROLLO
+# Uso: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+services:
+  # Override para desarrollo de Django
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development  # Si usamos multi-stage build
+    volumes:
+      # Montar código fuente para hot-reloading
+      - .:/app
+      - ./docker/entrypoint.sh:/entrypoint.sh
+      # Excluir directorios pesados
+      - /app/venv
+      - /app/__pycache__
+      - /app/.git
+    environment:
+      # Variables específicas de desarrollo
+      - DJANGO_DEVELOPMENT=true
+      - DEBUG=true
+      - DJANGO_SETTINGS_MODULE=core.settings
+      # Hot reloading
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    # Puerto directo para desarrollo (sin Nginx)
+    ports:
+      - "8000:8000"
+
+  # Override para Nginx en desarrollo (opcional)
+  nginx:
+    # Comentar para desarrollo directo con Django
+    profiles: ["production"]  # Solo se ejecuta con --profile production
+
+  # MySQL con configuraciones de desarrollo
+  mysql:
+    environment:
+      # Más permisivo en desarrollo
+      - MYSQL_ROOT_PASSWORD=dev_root_123
+    volumes:
+      # Agregar volumen para scripts de inicialización
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+      - mysql_dev_data:/var/lib/mysql
+      - ./backups:/backups
+    ports:
+      - "3306:3306"  # Exponer puerto para herramientas externas
+
+  # Redis con persistencia deshabilitada para desarrollo
+  redis:
+    command: redis-server --save "" --appendonly no
+    volumes:
+      - redis_dev_data:/data
+
+volumes:
+  mysql_dev_data:
+  redis_dev_data: 

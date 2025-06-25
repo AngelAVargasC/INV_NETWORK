@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: att_inventario_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: att_root_2024
+      MYSQL_DATABASE: inventario_network_db
+      MYSQL_USER: att_inventario
+      MYSQL_PASSWORD: att_secure_2024
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backups:/backups
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - att_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 30s
+
+  # Aplicación Django
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: att_django_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
+      - ./staticfiles:/app/staticfiles
+      - ./docker/entrypoint.sh:/entrypoint.sh
+    environment:
+      # Database
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=inventario_network_db
+      - DB_USER=att_inventario
+      - DB_PASSWORD=att_secure_2024
+      # Django
+      - DJANGO_DEVELOPMENT=true
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@att.com
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - SECRET_KEY=django-insecure-32&jnej0n!4gnx7i3(fhc(pqp&dfghf=%y@2gp!66w7(5_+bj6
+      - DEBUG=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - att_network
+    entrypoint: ["/entrypoint.sh"]
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  # Servidor web Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: att_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./staticfiles:/app/staticfiles:ro
+      - ./media:/app/media:ro
+    depends_on:
+      - web
+    networks:
+      - att_network
+
+  # Redis para cache y sesiones
+  redis:
+    image: redis:7-alpine
+    container_name: att_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - att_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+      interval: 30s
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  att_network:
+    driver: bridge

@@ -1,0 +1,960 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if object %}Editar Artículo - {{ object.id_pmo }}{% else %}Nuevo Artículo PMO{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === VARIABLES EJECUTIVAS AT&T === */
+    :root {
+        --att-primary: #00a2ff;
+        --att-secondary: #ff7200;
+        --att-success: #22c55e;
+        --att-warning: #f59e0b;
+        --att-danger: #ef4444;
+        --att-info: #3b82f6;
+        --att-gray-50: #f8fafc;
+        --att-gray-100: #f1f5f9;
+        --att-gray-200: #e2e8f0;
+        --att-gray-300: #cbd5e1;
+        --att-gray-500: #64748b;
+        --att-gray-600: #475569;
+        --att-gray-700: #334155;
+        --att-gray-800: #1e293b;
+        --att-gray-900: #0f172a;
+        --att-white: #ffffff;
+        
+        --att-gradient: linear-gradient(135deg, #00a2ff 0%, #0066cc 100%);
+        --att-gradient-secondary: linear-gradient(135deg, #ff7200 0%, #cc5500 100%);
+        --att-gradient-soft: linear-gradient(135deg, rgba(0, 162, 255, 0.1) 0%, rgba(0, 162, 255, 0.05) 100%);
+        
+        --shadow-soft: 0 2px 8px rgba(0, 162, 255, 0.1);
+        --shadow-medium: 0 4px 16px rgba(0, 162, 255, 0.15);
+        --shadow-strong: 0 8px 32px rgba(0, 162, 255, 0.2);
+        --shadow-executive: 0 12px 48px rgba(0, 162, 255, 0.25);
+        
+        --border-radius-sm: 6px;
+        --border-radius-md: 10px;
+        --border-radius-lg: 16px;
+        --border-radius-xl: 24px;
+        
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 0.75rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+        --spacing-xl: 2rem;
+        --spacing-2xl: 3rem;
+        
+        --font-size-xs: 0.75rem;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1rem;
+        --font-size-lg: 1.125rem;
+        --font-size-xl: 1.25rem;
+        --font-size-2xl: 1.5rem;
+        --font-size-3xl: 2rem;
+        
+        --transition-fast: 0.15s ease;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+    }
+
+    /* === LAYOUT EJECUTIVO === */
+    .executive-content {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        padding: var(--spacing-lg);
+    }
+
+    .executive-form-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* === HEADER EJECUTIVO === */
+    .executive-form-header {
+        background: var(--att-gradient);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-2xl) var(--spacing-xl);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: var(--shadow-executive);
+        position: relative;
+        overflow: hidden;
+        color: var(--att-white);
+    }
+
+    .executive-form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+    }
+
+    .form-header-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+    }
+
+    .header-info {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .form-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .form-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-2xl);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title h1 {
+        font-size: var(--font-size-3xl);
+        font-weight: 800;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-subtitle {
+        font-size: var(--font-size-lg);
+        font-weight: 500;
+        opacity: 0.9;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .form-description {
+        font-size: var(--font-size-base);
+        opacity: 0.8;
+        line-height: 1.6;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+    }
+
+    .executive-btn {
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        border: none;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .executive-btn-white {
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--att-primary);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .executive-btn-white:hover {
+        background: var(--att-white);
+        color: var(--att-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* === GRID DE FORMULARIO === */
+    .form-main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-xl);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    /* === CARDS EJECUTIVAS === */
+    .executive-form-card {
+        background: linear-gradient(135deg, var(--att-white) 0%, #f8fafe 100%);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-xl);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .executive-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--att-gradient);
+    }
+
+    .form-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+        padding-bottom: var(--spacing-lg);
+        border-bottom: 2px solid var(--att-gray-100);
+    }
+
+    .form-card-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--att-gradient);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--att-white);
+        font-size: var(--font-size-xl);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .form-card-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+
+    /* === SECCIONES DEL FORMULARIO === */
+    .form-section {
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--att-gray-700);
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 2px solid var(--att-gray-200);
+    }
+
+    .section-icon {
+        width: 24px;
+        height: 24px;
+        color: var(--att-primary);
+    }
+
+    /* === CAMPOS DEL FORMULARIO === */
+    .executive-form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .executive-label {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-weight: 600;
+        color: var(--att-gray-700);
+        margin-bottom: var(--spacing-sm);
+        font-size: var(--font-size-base);
+    }
+
+    .label-icon {
+        color: var(--att-primary);
+        font-size: var(--font-size-sm);
+    }
+
+    .required-asterisk {
+        color: var(--att-danger);
+        margin-left: var(--spacing-xs);
+    }
+
+    .executive-input {
+        width: 100%;
+        padding: var(--spacing-md);
+        border: 2px solid var(--att-gray-200);
+        border-radius: var(--border-radius-md);
+        background: var(--att-white);
+        font-family: inherit;
+        font-size: var(--font-size-base);
+        transition: all var(--transition-normal);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .executive-input:focus {
+        outline: none;
+        border-color: var(--att-primary);
+        box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+        background: rgba(0, 162, 255, 0.02);
+    }
+
+    .executive-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .field-help {
+        font-size: var(--font-size-sm);
+        color: var(--att-gray-500);
+        margin-top: var(--spacing-xs);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    .field-error {
+        color: var(--att-danger);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    /* === GRID DE CAMPOS === */
+    .fields-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .fields-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .field-full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* === ALERTAS === */
+    .executive-alert {
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--spacing-lg);
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .executive-alert.error {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border-left: 4px solid var(--att-danger);
+        color: var(--att-danger);
+    }
+
+    .alert-icon {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* === BOTONES === */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-2xl);
+        padding-top: var(--spacing-lg);
+        border-top: 2px solid var(--att-gray-100);
+    }
+
+    .executive-submit-btn {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        border: none;
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-radius: var(--border-radius-lg);
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-soft);
+        min-width: 200px;
+        justify-content: center;
+    }
+
+    .executive-submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .executive-cancel-btn {
+        background: var(--att-gray-100);
+        color: var(--att-gray-700);
+        border: 2px solid var(--att-gray-200);
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-radius: var(--border-radius-lg);
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        text-decoration: none;
+    }
+
+    .executive-cancel-btn:hover {
+        background: var(--att-gray-200);
+        border-color: var(--att-gray-300);
+        transform: translateY(-2px);
+        color: var(--att-gray-700);
+        text-decoration: none;
+    }
+
+    /* === PANEL LATERAL === */
+    .executive-sidebar-panel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    .executive-info-card {
+        background: linear-gradient(135deg, var(--att-white) 0%, #f8fafe 100%);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .executive-info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--att-gradient);
+    }
+
+    .info-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .info-card-icon {
+        width: 35px;
+        height: 35px;
+        background: var(--att-gradient);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--att-white);
+        font-size: var(--font-size-base);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .info-card-title {
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .form-main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .executive-content {
+            padding: var(--spacing-md);
+        }
+
+        .form-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .fields-grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .executive-submit-btn,
+        .executive-cancel-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="executive-content">
+    <div class="executive-form-container">
+        <!-- Header Ejecutivo -->
+        <div class="executive-form-header">
+            <div class="form-header-content">
+                <div class="header-info">
+                    <div class="form-title">
+                        <div class="form-icon">
+                            <i class="fas fa-{% if object %}edit{% else %}plus-circle{% endif %}"></i>
+                        </div>
+                        <h1>{% if object %}Editar Artículo PMO{% else %}Nuevo Artículo PMO{% endif %}</h1>
+                    </div>
+                    <div class="form-subtitle">
+                        Gestión de Proyectos PMO AT&T
+                    </div>
+                    <div class="form-description">
+                        {% if object %}
+                            Modificar la información del artículo {{ object.id_pmo }} en el sistema de inventario PMO.
+                        {% else %}
+                            Crear un nuevo artículo en el sistema de inventario PMO con información completa del proyecto.
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="{% url 'inventario:articulo_list' %}" class="executive-btn executive-btn-white">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver a Lista</span>
+                </a>
+                {% if object %}
+                    <a href="{% url 'inventario:articulo_detail' object.pk %}" class="executive-btn executive-btn-white">
+                        <i class="fas fa-eye"></i>
+                        <span>Ver Detalle</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+        <!-- Grid Principal -->
+        <div class="form-main-grid">
+            <!-- Formulario Principal -->
+            <div class="executive-form-card">
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h2 class="form-card-title">
+                        {% if object %}Editar Información{% else %}Información del Artículo{% endif %}
+                    </h2>
+                </div>
+
+                <!-- Alertas -->
+                {% if form.non_field_errors %}
+                    <div class="executive-alert error">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div>
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Formulario -->
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                    <!-- Sección: Información Básica -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle section-icon"></i>
+                            Información Básica
+                        </h3>
+                        <div class="fields-grid fields-grid-2">
+                            <!-- Año -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-calendar label-icon"></i>
+                                    {{ form.año.label }}
+                                    {% if form.año.field.required %}<span class="required-asterisk">*</span>{% endif %}
+                                </label>
+                                <input type="number" name="{{ form.año.name }}" value="{{ form.año.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.año.id_for_label }}" 
+                                       {% if form.año.field.required %}required{% endif %}>
+                                {% if form.año.help_text %}
+                                    <div class="field-help">
+                                        <i class="fas fa-info-circle"></i>
+                                        {{ form.año.help_text }}
+                                    </div>
+                                {% endif %}
+                                {% if form.año.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.año.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- ID PMO -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-hashtag label-icon"></i>
+                                    {{ form.id_pmo.label }}
+                                    {% if form.id_pmo.field.required %}<span class="required-asterisk">*</span>{% endif %}
+                                </label>
+                                <input type="text" name="{{ form.id_pmo.name }}" value="{{ form.id_pmo.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.id_pmo.id_for_label }}" 
+                                       {% if form.id_pmo.field.required %}required{% endif %}>
+                                {% if form.id_pmo.help_text %}
+                                    <div class="field-help">
+                                        <i class="fas fa-info-circle"></i>
+                                        {{ form.id_pmo.help_text }}
+                                    </div>
+                                {% endif %}
+                                {% if form.id_pmo.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.id_pmo.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Artículo -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-box label-icon"></i>
+                                    {{ form.articulo.label }}
+                                </label>
+                                <input type="text" name="{{ form.articulo.name }}" value="{{ form.articulo.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.articulo.id_for_label }}">
+                                {% if form.articulo.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.articulo.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Proveedor -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-building label-icon"></i>
+                                    {{ form.proveedor.label }}
+                                </label>
+                                <input type="text" name="{{ form.proveedor.name }}" value="{{ form.proveedor.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.proveedor.id_for_label }}">
+                                {% if form.proveedor.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.proveedor.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="executive-form-group field-full-width">
+                                <label class="executive-label">
+                                    <i class="fas fa-align-left label-icon"></i>
+                                    {{ form.descripcion.label }}
+                                </label>
+                                <textarea name="{{ form.descripcion.name }}" class="executive-input executive-textarea" 
+                                          id="{{ form.descripcion.id_for_label }}">{{ form.descripcion.value|default:'' }}</textarea>
+                                {% if form.descripcion.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.descripcion.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Información de Proyecto -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-project-diagram section-icon"></i>
+                            Información de Proyecto
+                        </h3>
+                        <div class="fields-grid fields-grid-2">
+                            <!-- Nombre Proyecto -->
+                            <div class="executive-form-group field-full-width">
+                                <label class="executive-label">
+                                    <i class="fas fa-tasks label-icon"></i>
+                                    {{ form.nombre_proyecto.label }}
+                                </label>
+                                <input type="text" name="{{ form.nombre_proyecto.name }}" value="{{ form.nombre_proyecto.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.nombre_proyecto.id_for_label }}">
+                                {% if form.nombre_proyecto.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.nombre_proyecto.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Program Manager -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-user-tie label-icon"></i>
+                                    {{ form.program_manager.label }}
+                                </label>
+                                <input type="text" name="{{ form.program_manager.name }}" value="{{ form.program_manager.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.program_manager.id_for_label }}">
+                                {% if form.program_manager.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.program_manager.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Estatus PMO -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-signal label-icon"></i>
+                                    {{ form.estatus_pmo_texto.label }}
+                                </label>
+                                <input type="text" name="{{ form.estatus_pmo_texto.name }}" value="{{ form.estatus_pmo_texto.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.estatus_pmo_texto.id_for_label }}">
+                                {% if form.estatus_pmo_texto.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.estatus_pmo_texto.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Fecha Implementación -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-calendar-check label-icon"></i>
+                                    {{ form.fecha_implementacion.label }}
+                                </label>
+                                <input type="text" name="{{ form.fecha_implementacion.name }}" value="{{ form.fecha_implementacion.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.fecha_implementacion.id_for_label }}">
+                                {% if form.fecha_implementacion.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.fecha_implementacion.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- AVP -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-crown label-icon"></i>
+                                    {{ form.avp.label }}
+                                </label>
+                                <input type="text" name="{{ form.avp.name }}" value="{{ form.avp.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.avp.id_for_label }}">
+                                {% if form.avp.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.avp.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Observaciones -->
+                            <div class="executive-form-group field-full-width">
+                                <label class="executive-label">
+                                    <i class="fas fa-sticky-note label-icon"></i>
+                                    {{ form.observaciones.label }}
+                                </label>
+                                <textarea name="{{ form.observaciones.name }}" class="executive-input executive-textarea" 
+                                          id="{{ form.observaciones.id_for_label }}">{{ form.observaciones.value|default:'' }}</textarea>
+                                {% if form.observaciones.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.observaciones.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Información Financiera -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-dollar-sign section-icon"></i>
+                            Información Financiera
+                        </h3>
+                        <div class="fields-grid fields-grid-2">
+                            <!-- Costo Unitario -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-coins label-icon"></i>
+                                    {{ form.costo_unitario_distribucion.label }}
+                                </label>
+                                <input type="number" step="0.01" name="{{ form.costo_unitario_distribucion.name }}" 
+                                       value="{{ form.costo_unitario_distribucion.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.costo_unitario_distribucion.id_for_label }}">
+                                {% if form.costo_unitario_distribucion.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.costo_unitario_distribucion.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                            </div>
+
+                            <!-- Cantidad Embarcada -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-shipping-fast label-icon"></i>
+                                    {{ form.cantidad_embarcada.label }}
+                                    </label>
+                                <input type="number" step="0.01" name="{{ form.cantidad_embarcada.name }}" 
+                                       value="{{ form.cantidad_embarcada.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.cantidad_embarcada.id_for_label }}">
+                                {% if form.cantidad_embarcada.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.cantidad_embarcada.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                    {% endif %}
+                            </div>
+
+                            <!-- Costo Salida MXN -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-money-bill-wave label-icon"></i>
+                                    {{ form.costo_salida_mxn.label }}
+                                </label>
+                                <input type="number" step="0.01" name="{{ form.costo_salida_mxn.name }}" 
+                                       value="{{ form.costo_salida_mxn.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.costo_salida_mxn.id_for_label }}">
+                                {% if form.costo_salida_mxn.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.costo_salida_mxn.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                            <!-- Existencia Actual -->
+                            <div class="executive-form-group">
+                                <label class="executive-label">
+                                    <i class="fas fa-boxes label-icon"></i>
+                                    {{ form.existencia_actual.label }}
+                                </label>
+                                <input type="number" name="{{ form.existencia_actual.name }}" 
+                                       value="{{ form.existencia_actual.value|default:'' }}" 
+                                       class="executive-input" id="{{ form.existencia_actual.id_for_label }}">
+                                {% if form.existencia_actual.errors %}
+                                    <div class="field-error">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% for error in form.existencia_actual.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="form-actions">
+                        <a href="{% url 'inventario:articulo_list' %}" class="executive-cancel-btn">
+                            <i class="fas fa-times"></i>
+                            <span>Cancelar</span>
+                        </a>
+                        <button type="submit" class="executive-submit-btn">
+                            <i class="fas fa-save"></i>
+                            <span>{% if object %}Actualizar{% else %}Crear{% endif %} Artículo</span>
+                            </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Panel Lateral -->
+            <div class="executive-sidebar-panel">
+                <!-- Guía de Campos -->
+                <div class="executive-info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3 class="info-card-title">Guía de Campos</h3>
+                    </div>
+                    
+                    <div style="space-y: var(--spacing-md);">
+                        <div style="margin-bottom: var(--spacing-md);">
+                            <strong style="color: var(--att-primary);">Campos Obligatorios:</strong>
+                            <ul style="margin: var(--spacing-xs) 0; padding-left: var(--spacing-lg); color: var(--att-gray-600);">
+                                <li>Año: Año del proyecto</li>
+                                <li>ID PMO: Identificador único</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-bottom: var(--spacing-md);">
+                            <strong style="color: var(--att-secondary);">Información Financiera:</strong>
+                            <ul style="margin: var(--spacing-xs) 0; padding-left: var(--spacing-lg); color: var(--att-gray-600);">
+                                <li>Usar formato decimal (ej: 1234.56)</li>
+                                <li>Los costos se expresan en MXN o USD</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <strong style="color: var(--att-success);">Estados PMO Comunes:</strong>
+                            <div style="margin-top: var(--spacing-sm);">
+                                <span style="background: var(--att-success); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 4px;">Instalado</span>
+                                <span style="background: var(--att-warning); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 4px;">Pendiente</span>
+                                <span style="background: var(--att-info); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Forecast</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="executive-info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="info-card-title">Acciones Rápidas</h3>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                        <a href="{% url 'inventario:dashboard' %}" style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: var(--att-gray-50); border-radius: var(--border-radius-md); text-decoration: none; color: var(--att-gray-700); transition: all var(--transition-normal);">
+                            <i class="fas fa-chart-line" style="color: var(--att-primary);"></i>
+                            <span>Ver Dashboard</span>
+                        </a>
+                        <a href="{% url 'inventario:importar_datos' %}" style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: var(--att-gray-50); border-radius: var(--border-radius-md); text-decoration: none; color: var(--att-gray-700); transition: all var(--transition-normal);">
+                            <i class="fas fa-upload" style="color: var(--att-secondary);"></i>
+                            <span>Importar Datos</span>
+                        </a>
+                        <a href="{% url 'inventario:articulo_list' %}" style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: var(--att-gray-50); border-radius: var(--border-radius-md); text-decoration: none; color: var(--att-gray-700); transition: all var(--transition-normal);">
+                            <i class="fas fa-list" style="color: var(--att-success);"></i>
+                            <span>Ver Lista Completa</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

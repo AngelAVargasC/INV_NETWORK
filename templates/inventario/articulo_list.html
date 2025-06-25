@@ -1,0 +1,1521 @@
+{% extends "base.html" %}
+{% load static %}
+{% load numero_filters %}
+{% load filter_utils %}
+
+{% block title %}Base de Datos PMO - AT&T Executive Portal{% endblock %}
+{% block page_title %}Base de Datos PMO{% endblock %}
+{% block breadcrumb %}Gestión de Inventario{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === BASE DE DATOS PMO EJECUTIVO AT&T === */
+    
+    /* === HEADER EJECUTIVO REPLICADO DEL DASHBOARD === */
+    .executive-dashboard-header {
+        background: linear-gradient(135deg, var(--att-white) 0%, var(--att-gray-50) 100%);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-200);
+    }
+    
+    .dashboard-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-xl);
+    }
+    
+    .header-info {
+        flex: 1;
+    }
+    
+    .dashboard-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .dashboard-title h1 {
+        font-size: var(--font-size-3xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+    
+    .dashboard-icon {
+        font-size: 2rem;
+        color: var(--att-primary);
+    }
+    
+    .dashboard-subtitle {
+        font-size: var(--font-size-lg);
+        color: var(--att-gray-600);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: var(--spacing-md);
+    }
+    
+    .executive-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        transition: all var(--transition-normal);
+        border: 2px solid transparent;
+    }
+    
+    .executive-btn-primary {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        border-color: var(--att-primary);
+    }
+    
+    .executive-btn-primary:hover {
+        background: linear-gradient(135deg, #0073e6 0%, var(--att-primary) 100%);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+        color: var(--att-white);
+        text-decoration: none;
+    }
+    
+    .executive-btn-outline {
+        background: var(--att-white);
+        color: var(--att-primary);
+        border-color: var(--att-primary);
+    }
+    
+    .executive-btn-outline:hover {
+        background: var(--att-primary);
+        color: var(--att-white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+        text-decoration: none;
+    }
+    
+    /* === LAYOUT PRINCIPAL GRID === */
+    .main-database-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xl);
+        margin-bottom: var(--spacing-lg);
+        align-items: start;
+    }
+    
+    @media (max-width: 1200px) {
+        .main-database-grid {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+    }
+    
+    /* === MÉTRICAS 2X2 EJECUTIVAS === */
+    .metrics-2x2-container {
+        background: linear-gradient(135deg, #f8fafe 0%, var(--att-white) 100%);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-100);
+    }
+    
+    .metrics-section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+    }
+    
+    .metrics-2x2-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .executive-metric-card {
+        background: linear-gradient(135deg, var(--att-primary) 0%, var(--att-light-blue) 100%);
+        color: var(--att-white);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-md);
+        margin-bottom: 0;
+        box-shadow: var(--shadow-soft);
+        transition: all var(--transition-normal);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .executive-metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        transform: translate(30px, -30px);
+    }
+    
+    .executive-metric-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-strong);
+    }
+    
+    .executive-metric-card.secondary {
+        background: linear-gradient(135deg, var(--att-secondary) 0%, #f59e0b 100%);
+    }
+    
+    .executive-metric-card.success {
+        background: linear-gradient(135deg, var(--att-success) 0%, #22c55e 100%);
+    }
+    
+    .executive-metric-card.info {
+        background: linear-gradient(135deg, var(--att-info) 0%, #0ea5e9 100%);
+    }
+    
+    .executive-metric-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
+        letter-spacing: -0.5px;
+        position: relative;
+        z-index: 2;
+        line-height: 1.1;
+    }
+    
+    .executive-metric-label {
+        font-size: var(--font-size-xs);
+        opacity: 0.95;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* === FILTROS EJECUTIVOS === */
+    .filters-container {
+        background: linear-gradient(135deg, var(--att-white) 0%, #f8fafe 100%);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-100);
+    }
+    
+    .filters-section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+    }
+    
+    .filters-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .filter-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .filter-label {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--att-gray-700);
+        margin-bottom: var(--spacing-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+    
+    .filter-input, .filter-select {
+        width: 100%;
+        padding: var(--spacing-md);
+        border: 2px solid var(--att-gray-200);
+        border-radius: var(--border-radius-md);
+        font-size: var(--font-size-sm);
+        transition: all var(--transition-normal);
+        background: var(--att-white);
+        color: var(--att-gray-800);
+    }
+    
+    .filter-input:focus, .filter-select:focus {
+        border-color: var(--att-primary);
+        box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+        outline: none;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+        justify-content: flex-end;
+    }
+    
+    /* === SECCIÓN DE TABLA EJECUTIVA === */
+    .executive-section {
+        background: var(--att-white);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-200);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 2px solid var(--att-gray-100);
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+    
+    .section-badge {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        padding: var(--spacing-xs) var(--spacing-md);
+        border-radius: var(--border-radius-lg);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+    }
+    
+    .table-controls {
+        display: flex;
+        gap: var(--spacing-sm);
+    }
+    
+    .control-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--att-gray-100);
+        color: var(--att-gray-700);
+        border: none;
+        border-radius: var(--border-radius-md);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+    
+    .control-btn:hover {
+        background: var(--att-primary);
+        color: var(--att-white);
+        transform: translateY(-2px);
+    }
+    
+    /* === TABLA EJECUTIVA ELEGANTE === */
+    .table-container {
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        background: white;
+        width: 100%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .table-scroll {
+        width: 100%;
+        max-width: calc(100vw - 431px);
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: 600px;
+        border-radius: 8px;
+    }
+    
+    .data-table {
+        width: 100%;
+        min-width: 2400px;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.875rem;
+        table-layout: fixed;
+    }
+    
+    .data-table thead th {
+        background: #f8fafc;
+        color: #374151;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid #e5e7eb;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    }
+    
+    .data-table tbody tr {
+        transition: all 0.15s ease;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .data-table tbody tr:hover {
+        background: #f8fafc;
+    }
+    
+    .data-table tbody td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border: none;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #374151;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    }
+    
+    /* Anchos específicos para cada columna */
+    .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 60px; } /* # */
+    .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 80px; } /* Año */
+    .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 120px; } /* Artículo */
+    .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 200px; } /* Descripción */
+    .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 150px; } /* Proveedor */
+    .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 180px; } /* Proy. Recibo */
+    .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 120px; } /* Orden Compra */
+    .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 150px; } /* ID PMO */
+    .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 180px; } /* Proyecto */
+    .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 150px; } /* Manager */
+    .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 250px; } /* Estatus */
+    .data-table th:nth-child(12), .data-table td:nth-child(12) { width: 120px; } /* Fecha */
+    .data-table th:nth-child(13), .data-table td:nth-child(13) { width: 150px; } /* Historial */
+    .data-table th:nth-child(14), .data-table td:nth-child(14) { width: 150px; } /* Observaciones */
+    .data-table th:nth-child(15), .data-table td:nth-child(15) { width: 120px; } /* Retrasos */
+    .data-table th:nth-child(16), .data-table td:nth-child(16) { width: 100px; } /* AVP */
+    .data-table th:nth-child(17), .data-table td:nth-child(17) { width: 100px; } /* Tipo */
+    .data-table th:nth-child(18), .data-table td:nth-child(18) { width: 120px; } /* Fábrica */
+    .data-table th:nth-child(19), .data-table td:nth-child(19) { width: 120px; } /* Costo Unit */
+    .data-table th:nth-child(20), .data-table td:nth-child(20) { width: 100px; } /* Embarcada */
+    .data-table th:nth-child(21), .data-table td:nth-child(21) { width: 120px; } /* Costo MXN */
+    .data-table th:nth-child(22), .data-table td:nth-child(22) { width: 100px; } /* Existencia */
+    .data-table th:nth-child(23), .data-table td:nth-child(23) { width: 120px; } /* Exist. MXN */
+    .data-table th:nth-child(24), .data-table td:nth-child(24) { width: 120px; } /* Exist. USD */
+    .data-table th:nth-child(25), .data-table td:nth-child(25) { width: 140px; padding: 0.75rem 0.5rem; } /* Acciones */
+    
+    /* === BOTONES DE ACCIÓN ELEGANTES === */
+    .action-buttons {
+        display: flex;
+        gap: 0.25rem;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+    
+    .action-btn {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        min-width: auto;
+        height: 26px;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .action-btn i {
+        font-size: 0.7rem;
+    }
+    
+    .btn-view {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #dbeafe;
+    }
+    
+    .btn-view:hover {
+        background: #dbeafe;
+        color: #1e40af;
+        text-decoration: none;
+    }
+    
+    .btn-edit {
+        background: #f0fdf4;
+        color: #166534;
+        border: 1px solid #dcfce7;
+    }
+    
+    .btn-edit:hover {
+        background: #dcfce7;
+        color: #14532d;
+        text-decoration: none;
+    }
+    
+    /* === STATUS BADGES REFINADOS === */
+    .status-badge {
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-align: center;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .status-pendiente {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+    
+    .status-completado {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    
+    /* === SISTEMA DE FILTRADO AVANZADO === */
+    .advanced-search-container {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .search-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .search-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .search-toggle {
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #374151;
+    }
+    
+    .search-toggle:hover {
+        background: #e5e7eb;
+    }
+    
+    .search-toggle.active {
+        background: #00a2ff;
+        color: white;
+        border-color: #00a2ff;
+    }
+    
+    .global-search-bar {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    }
+    
+    .global-search-bar:focus {
+        border-color: #00a2ff;
+        box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+        outline: none;
+    }
+    
+    .column-filters {
+        display: none;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .column-filters.active {
+        display: grid;
+    }
+    
+    .column-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .column-filter-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .column-filter-input {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+    
+    .column-filter-input:focus {
+        border-color: #00a2ff;
+        box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.1);
+        outline: none;
+    }
+    
+    .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #dbeafe;
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .filter-tag .remove-filter {
+        background: none;
+        border: none;
+        color: #1e40af;
+        cursor: pointer;
+        font-size: 0.875rem;
+        padding: 0;
+        margin-left: 0.25rem;
+    }
+    
+    .filter-tag .remove-filter:hover {
+        color: #1e3a8a;
+    }
+    
+    .search-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        justify-content: flex-end;
+    }
+    
+    .search-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .search-btn-primary {
+        background: #00a2ff;
+        color: white;
+    }
+    
+    .search-btn-primary:hover {
+        background: #0066cc;
+    }
+    
+    .search-btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+    
+    .search-btn-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    .results-summary {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    .results-count {
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    /* === TIPOGRAFÍA REFINADA === */
+    .currency-value {
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-weight: 600;
+        color: #059669;
+        font-size: 0.8rem;
+    }
+    
+    .quantity-value {
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-weight: 600;
+        color: #dc2626;
+        font-size: 0.8rem;
+    }
+    
+    .id-value {
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-weight: 500;
+        color: #374151;
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+    
+    /* === PAGINACIÓN EJECUTIVA === */
+    .executive-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-lg);
+        padding: var(--spacing-lg) 0;
+    }
+    
+    .pagination-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--att-white);
+        color: var(--att-gray-700);
+        border: 2px solid var(--att-gray-200);
+        border-radius: var(--border-radius-md);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all var(--transition-normal);
+    }
+    
+    .pagination-btn:hover {
+        background: var(--att-primary);
+        color: var(--att-white);
+        border-color: var(--att-primary);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+    
+    .pagination-btn.active {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        border-color: var(--att-primary);
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    /* === SCROLLBAR ELEGANTE === */
+    .table-scroll::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .table-scroll::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 4px;
+    }
+    
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+    
+    .table-scroll::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+    
+    .table-scroll::-webkit-scrollbar-corner {
+        background: #f3f4f6;
+    }
+    
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .table-scroll {
+            max-width: calc(100vw - 400px);
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .table-scroll {
+            max-width: calc(100vw - 80px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-header-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--spacing-lg);
+        }
+        
+        .header-actions {
+            flex-direction: column;
+        }
+        
+        .metrics-2x2-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+        }
+        
+        .filters-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--spacing-md);
+        }
+        
+        .table-controls {
+            justify-content: center;
+        }
+        
+        .executive-pagination {
+            flex-wrap: wrap;
+        }
+        
+        .table-scroll {
+            max-width: calc(100vw - 60px);
+        }
+        
+        .data-table {
+            min-width: 1800px;
+        }
+        
+        .data-table th, .data-table td {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="executive-dashboard-container">
+    <!-- Header Ejecutivo -->
+    <div class="executive-dashboard-header">
+        <div class="dashboard-header-content">
+            <div class="header-info">
+                <div class="dashboard-title">
+                    <i class="fas fa-database dashboard-icon"></i>
+                    <h1>Base de Datos PMO</h1>
+                </div>
+                <p class="dashboard-subtitle">Sistema Integral de Gestión de Inventario y Proyectos AT&T</p>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'inventario:dashboard' %}" class="executive-btn executive-btn-outline">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'inventario:importar_datos' %}" class="executive-btn executive-btn-primary">
+                    <i class="fas fa-upload"></i>
+                    Importar Datos
+                </a>
+                <a href="{% url 'inventario:articulo_create' %}" class="executive-btn executive-btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nuevo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Principal -->
+    <div class="main-database-grid">
+        <!-- Métricas 2x2 -->
+        <div class="metrics-2x2-container">
+            <h2 class="metrics-section-title">
+                <i class="fas fa-chart-bar"></i>
+                Control de Base de Datos
+            </h2>
+            <div class="metrics-2x2-grid">
+                <div class="executive-metric-card">
+                    <div class="executive-metric-number">
+                        {% if is_paginated %}
+                            {{ page_obj.paginator.count }}
+                        {% else %}
+                            {{ articulos.count }}
+                        {% endif %}
+                    </div>
+                    <div class="executive-metric-label">
+                        <i class="fas fa-database"></i>
+                        Artículos Totales
+                    </div>
+                </div>
+                <div class="executive-metric-card secondary">
+                    <div class="executive-metric-number">
+                        {% count_active_filters request %}
+                    </div>
+                    <div class="executive-metric-label">
+                        <i class="fas fa-filter"></i>
+                        Filtros Activos
+                    </div>
+                </div>
+                <div class="executive-metric-card success">
+                    <div class="executive-metric-number">
+                        {% if is_paginated %}
+                            {{ page_obj.number }}
+                        {% else %}
+                            1
+                        {% endif %}
+                    </div>
+                    <div class="executive-metric-label">
+                        <i class="fas fa-eye"></i>
+                        Página Actual
+                    </div>
+                </div>
+                <div class="executive-metric-card info">
+                    <div class="executive-metric-number">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="executive-metric-label">
+                        <i class="fas fa-server"></i>
+                        Estado Sistema
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sistema de Filtrado Avanzado -->
+        <div class="advanced-search-container">
+            <div class="search-header">
+                <h2 class="search-title">
+                <i class="fas fa-search"></i>
+                    Búsqueda Avanzada de Inventario
+            </h2>
+                <button type="button" class="search-toggle" id="toggleColumnFilters">
+                    <i class="fas fa-sliders-h"></i>
+                    Filtros por Columna
+                </button>
+            </div>
+            
+            <form method="get" id="advancedSearchForm">
+                <!-- Barra de Búsqueda Global -->
+                <input type="text" 
+                       class="global-search-bar" 
+                       name="q" 
+                       value="{{ request.GET.q }}"
+                       placeholder="Buscar en toda la base de datos... (ID PMO, proyecto, proveedor, etc.)"
+                       id="globalSearch">
+                
+                <!-- Filtros por Columna -->
+                <div class="column-filters" id="columnFilters">
+                    <div class="column-filter">
+                        <label class="column-filter-label">Año</label>
+                        <input type="number" name="año" value="{{ request.GET.año }}" 
+                               placeholder="2024" class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Artículo</label>
+                        <input type="text" name="articulo" value="{{ request.GET.articulo }}" 
+                               placeholder="Código de artículo..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Descripción</label>
+                        <input type="text" name="descripcion" value="{{ request.GET.descripcion }}" 
+                               placeholder="Descripción..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Proveedor</label>
+                        <input type="text" name="proveedor" value="{{ request.GET.proveedor }}" 
+                               placeholder="Nombre del proveedor..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Proyecto Recibo</label>
+                        <input type="text" name="proyecto_recibo" value="{{ request.GET.proyecto_recibo }}" 
+                               placeholder="Proyecto de recibo..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Orden Compra</label>
+                        <input type="text" name="orden_compra" value="{{ request.GET.orden_compra }}" 
+                               placeholder="Número de orden..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">ID PMO</label>
+                        <input type="text" name="id_pmo" value="{{ request.GET.id_pmo }}" 
+                               placeholder="ID de PMO..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Proyecto</label>
+                        <input type="text" name="nombre_proyecto" value="{{ request.GET.nombre_proyecto }}" 
+                               placeholder="Nombre del proyecto..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Manager</label>
+                        <input type="text" name="manager" value="{{ request.GET.manager }}" 
+                               placeholder="Program Manager..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Estatus</label>
+                        <input type="text" name="estatus" value="{{ request.GET.estatus }}" 
+                               placeholder="Estado..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">AVP</label>
+                        <input type="text" name="avp" value="{{ request.GET.avp }}" 
+                               placeholder="AVP..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Tipo</label>
+                        <input type="text" name="tipo" value="{{ request.GET.tipo }}" 
+                               placeholder="Tipo..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Fábrica</label>
+                        <input type="text" name="fabrica" value="{{ request.GET.fabrica }}" 
+                               placeholder="Fábrica..." class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Costo Min</label>
+                        <input type="number" name="costo_min" value="{{ request.GET.costo_min }}" 
+                               placeholder="0" step="0.01" class="column-filter-input">
+                </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Costo Max</label>
+                        <input type="number" name="costo_max" value="{{ request.GET.costo_max }}" 
+                               placeholder="999999" step="0.01" class="column-filter-input">
+                    </div>
+                    <div class="column-filter">
+                        <label class="column-filter-label">Existencia Min</label>
+                        <input type="number" name="existencia_min" value="{{ request.GET.existencia_min }}" 
+                               placeholder="0" class="column-filter-input">
+                    </div>
+                </div>
+                
+                <!-- Filtros Activos -->
+                <div class="active-filters" id="activeFilters"></div>
+                
+                <!-- Acciones -->
+                <div class="search-actions">
+                    <button type="button" class="search-btn search-btn-secondary" onclick="clearAllFilters()">
+                        <i class="fas fa-eraser"></i>
+                        Limpiar Todo
+                    </button>
+                    <button type="submit" class="search-btn search-btn-primary">
+                        <i class="fas fa-search"></i>
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sección de Tabla -->
+    <div class="executive-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-table"></i>
+                Inventario Completo
+                <span class="section-badge">
+                    {% if is_paginated %}
+                        {{ page_obj.paginator.count }}
+                    {% else %}
+                        {{ articulos.count }}
+                    {% endif %}
+                </span>
+            </h2>
+            <div class="table-controls">
+                <button type="button" class="control-btn" onclick="openFullScreen()">
+                    <i class="fas fa-expand"></i>
+                    Pantalla Completa
+                </button>
+                <button type="button" class="control-btn">
+                    <i class="fas fa-download"></i>
+                    Exportar
+                </button>
+            </div>
+        </div>
+
+    <!-- Resumen de Resultados -->
+    <div class="results-summary">
+        <div class="results-count">
+            {% if is_paginated %}
+                Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }} resultados
+            {% else %}
+                {{ articulos.count }} resultado{% if articulos.count != 1 %}s{% endif %} encontrado{% if articulos.count != 1 %}s{% endif %}
+            {% endif %}
+        </div>
+        <div>
+            {% count_active_filters request as filters_count %}
+            {% pluralize_filtros filters_count %} aplicado{% if filters_count != 1 %}s{% endif %}
+            </div>
+        </div>
+
+                 {% if articulos %}
+        <div class="table-container">
+            <div class="table-scroll" id="tableScrollContainer">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Año</th>
+                            <th>Artículo</th>
+                            <th>Descripción</th>
+                            <th>Proveedor</th>
+                            <th>Proy. Recibo</th>
+                            <th>Orden Compra</th>
+                            <th>ID PMO</th>
+                            <th>Proyecto</th>
+                            <th>Manager</th>
+                            <th>Estatus</th>
+                            <th>Fecha Impl.</th>
+                            <th>Historial</th>
+                            <th>Observaciones</th>
+                            <th>Retrasos</th>
+                            <th>AVP</th>
+                            <th>Tipo</th>
+                            <th>Fábrica</th>
+                            <th>Costo Unit.</th>
+                            <th>Embarcada</th>
+                            <th>Costo MXN</th>
+                            <th>Existencia</th>
+                            <th>Exist. MXN</th>
+                            <th>Exist. USD</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for articulo in articulos %}
+                        <tr>
+                            <td>
+                                {% if is_paginated %}
+                                    {{ page_obj.start_index|add:forloop.counter0 }}
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td>{{ articulo.año|default:"-" }}</td>
+                            <td>{{ articulo.articulo|default:"-"|truncatechars:15 }}</td>
+                            <td title="{{ articulo.descripcion }}">{{ articulo.descripcion|default:"-"|truncatechars:25 }}</td>
+                            <td title="{{ articulo.proveedor }}">{{ articulo.proveedor|default:"-"|truncatechars:20 }}</td>
+                            <td>{{ articulo.nombre_proyecto_recibo|default:"-"|truncatechars:25 }}</td>
+                            <td>{{ articulo.orden_compra|default:"-"|truncatechars:15 }}</td>
+                            <td>
+                                <span class="id-value">{{ articulo.id_pmo|default:"-"|truncatechars:20 }}</span>
+                            </td>
+                            <td title="{{ articulo.nombre_proyecto }}">{{ articulo.nombre_proyecto|default:"-"|truncatechars:25 }}</td>
+                            <td>{{ articulo.program_manager|default:"-"|truncatechars:20 }}</td>
+                            <td>
+                                {% if 'instalado' in articulo.estatus_pmo_texto|lower %}
+                                    <span class="status-badge status-completado">
+                                        <i class="fas fa-check-circle"></i>
+                                        {{ articulo.estatus_pmo_texto|truncatechars:15 }}
+                                    </span>
+                                {% elif 'pendiente' in articulo.estatus_pmo_texto|lower %}
+                                    <span class="status-badge status-pendiente">
+                                        <i class="fas fa-clock"></i>
+                                        {{ articulo.estatus_pmo_texto|truncatechars:15 }}
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-completado">
+                                        <i class="fas fa-cog"></i>
+                                        {{ articulo.estatus_pmo_texto|truncatechars:15 }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ articulo.fecha_implementacion|default:"-"|truncatechars:15 }}</td>
+                            <td title="{{ articulo.historial }}">{{ articulo.historial|default:"-"|truncatechars:25 }}</td>
+                            <td title="{{ articulo.observaciones }}">{{ articulo.observaciones|default:"-"|truncatechars:25 }}</td>
+                            <td>{{ articulo.retrasos_salida|default:"-"|truncatechars:20 }}</td>
+                            <td>{{ articulo.avp|default:"-"|truncatechars:15 }}</td>
+                            <td>{{ articulo.tipo|default:"-"|truncatechars:12 }}</td>
+                            <td>{{ articulo.fabrica_texto|default:"-"|truncatechars:12 }}</td>
+                            <td>
+                                {% if articulo.costo_unitario_distribucion %}
+                                    <span class="currency-value">${{ articulo.costo_unitario_distribucion|floatformat:2 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if articulo.cantidad_embarcada %}
+                                    <span class="quantity-value">{{ articulo.cantidad_embarcada|floatformat:0 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if articulo.costo_salida_mxn %}
+                                    <span class="currency-value">${{ articulo.costo_salida_mxn|floatformat:2 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if articulo.existencia_actual %}
+                                    <span class="quantity-value">{{ articulo.existencia_actual|floatformat:0 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if articulo.costo_mxn_existencias %}
+                                    <span class="currency-value">${{ articulo.costo_mxn_existencias|floatformat:2 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if articulo.costo_usd_existencias %}
+                                    <span class="currency-value">${{ articulo.costo_usd_existencias|floatformat:2 }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'inventario:articulo_detail' articulo.pk %}" 
+                                       class="action-btn btn-view" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                        Ver
+                                    </a>
+                                    <a href="{% url 'inventario:articulo_update' articulo.pk %}" 
+                                       class="action-btn btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                        Editar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Paginación Ejecutiva -->
+        {% if is_paginated %}
+        <div class="executive-pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1" 
+                   class="pagination-btn">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
+                   class="pagination-btn">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+            {% else %}
+                <span class="pagination-btn disabled">
+                    <i class="fas fa-angle-double-left"></i>
+                </span>
+                <span class="pagination-btn disabled">
+                    <i class="fas fa-angle-left"></i>
+                </span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="pagination-btn active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}" 
+                       class="pagination-btn">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+                   class="pagination-btn">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}" 
+                   class="pagination-btn">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% else %}
+                <span class="pagination-btn disabled">
+                    <i class="fas fa-angle-right"></i>
+                </span>
+                <span class="pagination-btn disabled">
+                    <i class="fas fa-angle-double-right"></i>
+                </span>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- Estado Vacío -->
+        <div style="text-align: center; padding: var(--spacing-2xl); color: var(--att-gray-500);">
+            <i class="fas fa-inbox" style="font-size: 4rem; margin-bottom: var(--spacing-lg);"></i>
+            <h3 style="color: var(--att-gray-700); margin-bottom: var(--spacing-md);">No se encontraron registros</h3>
+            <p style="margin-bottom: var(--spacing-lg);">
+                {% if request.GET %}
+                    No hay artículos que coincidan con los filtros aplicados.
+                {% else %}
+                    Aún no hay artículos registrados en el sistema.
+                {% endif %}
+            </p>
+            <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                {% if request.GET %}
+                    <a href="{% url 'inventario:articulo_list' %}" class="executive-btn executive-btn-outline">
+                        <i class="fas fa-times"></i>
+                        Limpiar Filtros
+                    </a>
+                {% endif %}
+                <a href="{% url 'inventario:importar_datos' %}" class="executive-btn executive-btn-primary">
+                    <i class="fas fa-upload"></i>
+                    Importar Datos
+                </a>
+                <a href="{% url 'inventario:articulo_create' %}" class="executive-btn executive-btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Crear Artículo
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// === SISTEMA DE FILTRADO AVANZADO ===
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleColumnFilters');
+    const columnFilters = document.getElementById('columnFilters');
+    const globalSearch = document.getElementById('globalSearch');
+    const activeFiltersContainer = document.getElementById('activeFilters');
+    const form = document.getElementById('advancedSearchForm');
+
+    // Toggle filtros por columna
+    toggleBtn.addEventListener('click', function() {
+        columnFilters.classList.toggle('active');
+        toggleBtn.classList.toggle('active');
+        
+        if (columnFilters.classList.contains('active')) {
+            toggleBtn.innerHTML = '<i class="fas fa-times"></i> Ocultar Filtros';
+        } else {
+            toggleBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Filtros por Columna';
+        }
+    });
+
+    // Búsqueda en tiempo real para búsqueda global
+    let globalSearchTimeout;
+    globalSearch.addEventListener('input', function() {
+        clearTimeout(globalSearchTimeout);
+        globalSearchTimeout = setTimeout(() => {
+            updateActiveFilters();
+        }, 300);
+    });
+
+    // Actualizar filtros activos en tiempo real
+    const filterInputs = document.querySelectorAll('.column-filter-input');
+    filterInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            updateActiveFilters();
+        });
+    });
+
+    // Función para actualizar filtros activos
+    function updateActiveFilters() {
+        activeFiltersContainer.innerHTML = '';
+        
+        // Filtro global
+        if (globalSearch.value.trim()) {
+            addFilterTag('Búsqueda Global', globalSearch.value, 'q');
+        }
+        
+        // Filtros por columna
+        filterInputs.forEach(input => {
+            if (input.value.trim()) {
+                const label = input.parentElement.querySelector('.column-filter-label').textContent;
+                addFilterTag(label, input.value, input.name);
+            }
+        });
+        
+        // Mostrar/ocultar contenedor
+        if (activeFiltersContainer.children.length > 0) {
+            activeFiltersContainer.style.display = 'flex';
+        } else {
+            activeFiltersContainer.style.display = 'none';
+        }
+    }
+
+    // Agregar tag de filtro activo
+    function addFilterTag(label, value, inputName) {
+        const tag = document.createElement('div');
+        tag.className = 'filter-tag';
+        tag.innerHTML = `
+            <span><strong>${label}:</strong> ${value}</span>
+            <button type="button" class="remove-filter" onclick="removeFilter('${inputName}')">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        activeFiltersContainer.appendChild(tag);
+    }
+
+    // Función global para remover filtros
+    window.removeFilter = function(inputName) {
+        const input = document.querySelector(`[name="${inputName}"]`);
+        if (input) {
+            input.value = '';
+            updateActiveFilters();
+        }
+    };
+
+    // Limpiar todos los filtros
+    window.clearAllFilters = function() {
+        // Limpiar búsqueda global
+        globalSearch.value = '';
+        
+        // Limpiar filtros por columna
+        filterInputs.forEach(input => {
+            input.value = '';
+        });
+        
+        // Actualizar filtros activos
+        updateActiveFilters();
+        
+        // Redirect to clean URL
+        window.location.href = '{% url "inventario:articulo_list" %}';
+    };
+
+    // Auto-submit con debounce
+    let formSubmitTimeout;
+    function autoSubmitForm() {
+        clearTimeout(formSubmitTimeout);
+        formSubmitTimeout = setTimeout(() => {
+            // Solo auto-submit si hay filtros aplicados
+            if (hasActiveFilters()) {
+                form.submit();
+            }
+        }, 1000); // 1 segundo de delay
+    }
+
+    // Verificar si hay filtros activos
+    function hasActiveFilters() {
+        if (globalSearch.value.trim()) return true;
+        
+        for (let input of filterInputs) {
+            if (input.value.trim()) return true;
+        }
+        
+        return false;
+    }
+
+    // Event listeners para auto-submit
+    globalSearch.addEventListener('input', autoSubmitForm);
+    filterInputs.forEach(input => {
+        input.addEventListener('input', autoSubmitForm);
+    });
+
+    // Inicializar filtros activos
+    updateActiveFilters();
+
+    // Enfocar en búsqueda global con Ctrl+F
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'f') {
+            e.preventDefault();
+            globalSearch.focus();
+        }
+    });
+});
+
+function openFullScreen() {
+    window.open('{% url "inventario:articulo_list_fullscreen" %}', '_blank');
+}
+
+// Mejorar experiencia de scroll en la tabla
+document.addEventListener('DOMContentLoaded', function() {
+    const tableContainer = document.getElementById('tableScrollContainer');
+    if (tableContainer) {
+        // Mostrar indicadores de scroll
+        function updateScrollIndicators() {
+            const isScrollableX = tableContainer.scrollWidth > tableContainer.clientWidth;
+            const isScrollableY = tableContainer.scrollHeight > tableContainer.clientHeight;
+            
+            if (isScrollableX) {
+                tableContainer.style.borderBottom = '3px solid var(--att-primary)';
+            }
+        }
+        
+        // Scroll suave con rueda del mouse
+        tableContainer.addEventListener('wheel', function(e) {
+            if (e.shiftKey) {
+                e.preventDefault();
+                tableContainer.scrollLeft += e.deltaY;
+            }
+        });
+        
+        updateScrollIndicators();
+        window.addEventListener('resize', updateScrollIndicators);
+    }
+});
+</script>
+{% endblock %} 

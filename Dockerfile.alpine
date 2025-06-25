@@ -1,0 +1,49 @@
+FROM python:3.12-alpine
+
+# Información del proyecto
+LABEL maintainer="AT&T Executive Portal Team"
+LABEL description="AT&T Inventario Network App - Alpine Production"
+
+# Set environment variables (siguiendo estilo del equipo)
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Instalar dependencias del sistema para Alpine
+RUN apk update \
+    && apk add --no-cache \
+        gcc \
+        musl-dev \
+        mysql-dev \
+        python3-dev \
+        libffi-dev \
+        jpeg-dev \
+        zlib-dev \
+        freetype-dev \
+        lcms2-dev \
+        openjpeg-dev \
+        tiff-dev \
+        tk-dev \
+        tcl-dev \
+        harfbuzz-dev \
+        fribidi-dev \
+        libimagequant-dev \
+        libxcb-dev \
+        libpng-dev \
+    && pip install --upgrade pip
+
+# Copiar requirements e instalar dependencias Python
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install -r /code/requirements.txt
+
+# Copiar código de la aplicación
+COPY . /code/
+WORKDIR /code/
+
+# Crear directorios necesarios
+RUN mkdir -p /code/logs /code/media /code/staticfiles
+
+# Hacer ejecutable el entrypoint
+RUN chmod +x entrypoint.sh
+
+# Comando por defecto (siguiendo estilo del equipo)
+CMD ["sh", "entrypoint.sh"] 

@@ -1,0 +1,1167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Portal Ejecutivo AT&T{% endblock %}
+
+{% block page_title %}Mi Perfil{% endblock %}
+{% block page_subtitle %}Configuración Personal y Profesional{% endblock %}
+
+{% block content %}
+<style>
+    /* === ESTILOS EJECUTIVOS AT&T PARA PERFIL === */
+    :root {
+        --att-blue: #00a2ff;
+        --att-blue-light: #65b3f0;
+        --att-orange: #ff7200;
+        --att-dark: #1e293b;
+        --att-gray: #64748b;
+        --executive-gradient: linear-gradient(135deg, var(--att-blue) 0%, var(--att-blue-light) 100%);
+        --success-color: #22c55e;
+        --warning-color: #f59e0b;
+    }
+
+    .perfil-container {
+        min-height: calc(100vh - 120px);
+        padding: 0;
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        grid-template-rows: auto auto;
+        gap: 2rem;
+        grid-template-areas: 
+            "profile-info form-section"
+            "profile-stats form-section";
+    }
+
+    .perfil-sidebar {
+        grid-area: profile-info / profile-info / profile-stats / profile-stats;
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: 1.5rem;
+    }
+
+    .perfil-main-content {
+        grid-area: form-section;
+        min-height: 100%;
+    }
+
+    /* === TARJETA DE INFORMACIÓN DEL USUARIO === */
+    .perfil-info-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 162, 255, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+        height: fit-content;
+    }
+
+    .perfil-info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--executive-gradient);
+    }
+
+    .perfil-avatar-section {
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .perfil-avatar {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid var(--att-blue);
+        padding: 4px;
+        background: white;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        object-fit: cover;
+    }
+
+    .perfil-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0, 162, 255, 0.3);
+    }
+
+    .perfil-avatar-placeholder {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: var(--executive-gradient);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .perfil-avatar-placeholder:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0, 162, 255, 0.3);
+    }
+
+    .perfil-nombre {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--att-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .perfil-username {
+        color: var(--att-gray);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .perfil-badge {
+        background: var(--executive-gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+    }
+
+    .perfil-puesto {
+        color: var(--att-gray);
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .perfil-fecha {
+        color: var(--att-gray);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* === TARJETA DE ESTADÍSTICAS REDISEÑADA === */
+    .perfil-stats-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 162, 255, 0.08);
+        overflow: hidden;
+        height: fit-content;
+        position: relative;
+    }
+
+    .perfil-stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--att-blue) 0%, var(--att-orange) 100%);
+    }
+
+    .perfil-stats-header {
+        background: linear-gradient(135deg, var(--att-blue) 0%, var(--att-blue-light) 100%);
+        padding: 1.5rem;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .perfil-stats-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        transform: translate(30px, -30px);
+    }
+
+    .perfil-stats-title {
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .perfil-stats-body {
+        padding: 2rem 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .perfil-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    .perfil-stat-item {
+        text-align: center;
+        padding: 1rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .perfil-stat-item:first-child {
+        border-right: 2px solid rgba(0, 162, 255, 0.1);
+    }
+
+    .perfil-stat-item:hover {
+        background: rgba(0, 162, 255, 0.02);
+        transform: translateY(-2px);
+    }
+
+    .perfil-stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.1rem;
+        color: white;
+    }
+
+    .perfil-stat-icon.registro {
+        background: linear-gradient(135deg, var(--att-blue) 0%, var(--att-blue-light) 100%);
+    }
+
+    .perfil-stat-icon.acceso {
+        background: linear-gradient(135deg, var(--success-color) 0%, #16a34a 100%);
+    }
+
+    .perfil-stat-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--att-dark) 0%, var(--att-gray) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .perfil-stat-label {
+        color: var(--att-gray);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+
+    /* === FORMULARIO EJECUTIVO === */
+    .perfil-form-card {
+        background: white;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        height: fit-content;
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+    }
+
+    .perfil-form-header {
+        background: var(--executive-gradient);
+        color: white;
+        padding: 1.5rem 2rem;
+        position: relative;
+    }
+
+    .perfil-form-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        background: linear-gradient(45deg, 
+            var(--att-orange) 0%, var(--att-orange) 10%, 
+            transparent 10%, transparent 20%,
+            var(--att-orange) 20%, var(--att-orange) 30%,
+            transparent 30%, transparent 40%,
+            var(--att-orange) 40%, var(--att-orange) 50%,
+            transparent 50%);
+        background-size: 40px 20px;
+    }
+
+    .perfil-form-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .perfil-form-body {
+        padding: 0;
+        display: grid;
+        grid-template-rows: auto auto auto;
+        gap: 0;
+    }
+
+    .perfil-section {
+        padding: 2rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .perfil-section:nth-child(even) {
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    }
+
+    .perfil-section:nth-child(odd) {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    }
+
+    .perfil-section:hover {
+        background: linear-gradient(135deg, rgba(0, 162, 255, 0.02) 0%, rgba(101, 179, 240, 0.02) 100%);
+        transform: translateX(5px);
+    }
+
+    .perfil-section-title {
+        color: var(--att-blue);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, var(--att-blue) 0%, var(--att-blue-light) 100%);
+        color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 162, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .perfil-section-title::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .perfil-section-title:hover::before {
+        left: 100%;
+    }
+
+    .perfil-form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .perfil-form-grid.single-column {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-form-grid.two-columns {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .perfil-form-group {
+        background: white;
+        padding: 1.75rem;
+        border-radius: 16px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .perfil-form-group::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--att-blue);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .perfil-form-group::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background: radial-gradient(circle, rgba(0, 162, 255, 0.05) 0%, transparent 70%);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .perfil-form-group:hover {
+        border-color: var(--att-blue);
+        box-shadow: 0 12px 30px rgba(0, 162, 255, 0.12);
+        transform: translateY(-3px);
+    }
+
+    .perfil-form-group:hover::before {
+        transform: scaleY(1);
+    }
+
+    .perfil-form-group:hover::after {
+        opacity: 1;
+    }
+
+    .perfil-form-group:focus-within {
+        border-color: var(--att-blue);
+        box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+    }
+
+    .perfil-form-group:focus-within::before {
+        transform: scaleY(1);
+        background: var(--att-orange);
+    }
+
+    .perfil-form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--att-dark);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .perfil-form-label::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--att-blue);
+        flex-shrink: 0;
+    }
+
+    .perfil-form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .perfil-form-input:focus {
+        background: #ffffff;
+        box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .perfil-form-select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .perfil-form-select:focus {
+        background: #ffffff;
+        box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.2);
+    }
+
+    .perfil-file-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px dashed #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .perfil-file-input:hover {
+        border-color: var(--att-blue);
+        background: rgba(0, 162, 255, 0.05);
+    }
+
+    .perfil-file-current {
+        font-size: 0.8rem;
+        color: var(--att-gray);
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background: #f1f5f9;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* === BOTONES EJECUTIVOS === */
+    .perfil-button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .perfil-btn-primary {
+        background: var(--executive-gradient);
+        color: white;
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+    }
+
+    .perfil-btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .perfil-btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .perfil-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 162, 255, 0.3);
+    }
+
+    .perfil-btn-secondary {
+        background: transparent;
+        color: var(--att-gray);
+        border: 2px solid #e2e8f0;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .perfil-btn-secondary:hover {
+        border-color: var(--att-blue);
+        color: var(--att-blue);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(0, 162, 255, 0.1);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .perfil-container {
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .perfil-container {
+            grid-template-columns: 1fr;
+            grid-template-areas: 
+                "profile-info"
+                "profile-stats" 
+                "form-section";
+            gap: 1.5rem;
+        }
+        
+        .perfil-sidebar {
+            grid-area: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
+            gap: 1.5rem;
+        }
+        
+        .perfil-main-content {
+            grid-area: auto;
+        }
+        
+        .perfil-form-card {
+            max-height: none;
+            overflow-y: visible;
+        }
+    }
+    
+         @media (max-width: 768px) {
+        .perfil-container {
+            gap: 1rem;
+        }
+        
+        .perfil-sidebar {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .perfil-section {
+            padding: 2rem;
+            min-height: 240px;
+        }
+        
+        .perfil-avatar-section {
+            padding: 1.5rem;
+        }
+        
+        .perfil-avatar,
+        .perfil-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .perfil-form-grid.two-columns {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .perfil-form-group {
+            padding: 1.5rem;
+            min-height: 100px;
+        }
+        
+        .perfil-section-title {
+            font-size: 1.1rem;
+            padding: 0.875rem 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+        
+        .perfil-btn-primary,
+        .perfil-btn-secondary {
+            justify-content: center;
+        }
+        
+        .perfil-stats-body {
+            padding: 1.5rem;
+        }
+        
+        .perfil-stat-item {
+            padding: 0.75rem;
+        }
+        
+        .perfil-stat-icon {
+            width: 35px;
+            height: 35px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .perfil-stat-value {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .perfil-form-grid {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        
+        .perfil-section {
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+        
+        .perfil-form-group {
+            padding: 1.25rem;
+            min-height: 90px;
+        }
+        
+        .perfil-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .perfil-stat-item:first-child {
+            border-right: none;
+            border-bottom: 2px solid rgba(0, 162, 255, 0.1);
+            padding-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* === SCROLLBAR PERSONALIZADA === */
+    .perfil-form-card::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .perfil-form-card::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+
+    .perfil-form-card::-webkit-scrollbar-thumb {
+        background: var(--att-blue);
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .perfil-form-card::-webkit-scrollbar-thumb:hover {
+        background: var(--att-blue-light);
+    }
+
+    /* === EFECTOS ADICIONALES GRID === */
+    .perfil-container {
+        position: relative;
+    }
+
+    .perfil-container::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        background: linear-gradient(45deg, 
+            rgba(0, 162, 255, 0.03) 0%, 
+            rgba(101, 179, 240, 0.03) 50%, 
+            rgba(255, 114, 0, 0.03) 100%);
+        border-radius: 30px;
+        z-index: -1;
+    }
+
+    .perfil-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+
+    .perfil-main-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* === ANIMACIONES === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .perfil-info-card {
+        animation: slideInLeft 0.6s ease-out;
+    }
+
+    .perfil-form-card {
+        animation: slideInRight 0.8s ease-out;
+    }
+
+    .perfil-stats-card {
+        animation: slideInLeft 1s ease-out;
+    }
+
+    /* === EFECTOS HOVER AVANZADOS === */
+    .perfil-info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 162, 255, 0.15);
+    }
+
+    .perfil-stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .perfil-form-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+</style>
+
+<div class="perfil-container">
+    <!-- === SIDEBAR: INFORMACIÓN DEL USUARIO === -->
+    <div class="perfil-sidebar">
+        <!-- Tarjeta de Información Principal -->
+        <div class="perfil-info-card">
+            <div class="perfil-avatar-section">
+                {% if object.foto_perfil %}
+                    <img src="{{ object.foto_perfil.url }}" 
+                         alt="Foto de Perfil" 
+                         class="perfil-avatar">
+                {% else %}
+                    <div class="perfil-avatar-placeholder">
+                        <i class="fas fa-user" style="font-size: 3.5rem; color: white;"></i>
+                    </div>
+                {% endif %}
+                
+                <h3 class="perfil-nombre">{{ user.get_full_name|default:user.username }}</h3>
+                <p class="perfil-username">@{{ user.username }}</p>
+                
+                {% if object.area %}
+                    <div class="perfil-badge">{{ object.get_area_display }}</div>
+                {% endif %}
+                
+                {% if object.puesto %}
+                    <p class="perfil-puesto">{{ object.puesto }}</p>
+                {% endif %}
+                
+                {% if object.fecha_ingreso %}
+                    <div class="perfil-fecha">
+                        <i class="fas fa-calendar-alt" style="color: var(--att-orange);"></i>
+                        <span>Miembro desde {{ object.fecha_ingreso|date:"F Y" }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Tarjeta de Estadísticas del Sistema -->
+        <div class="perfil-stats-card">
+            <div class="perfil-stats-header">
+                <h6 class="perfil-stats-title">
+                    <i class="fas fa-chart-line"></i>
+                    Información del Sistema
+                </h6>
+            </div>
+            <div class="perfil-stats-body">
+                <div class="perfil-stats-grid">
+                    <div class="perfil-stat-item">
+                        <div class="perfil-stat-icon registro">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="perfil-stat-value">{{ user.date_joined|date:"M Y" }}</div>
+                        <div class="perfil-stat-label">Registro</div>
+                    </div>
+                    <div class="perfil-stat-item">
+                        <div class="perfil-stat-icon acceso">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="perfil-stat-value">{{ user.last_login|date:"d/m/Y"|default:"Nunca" }}</div>
+                        <div class="perfil-stat-label">Último Acceso</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- === CONTENIDO PRINCIPAL: FORMULARIO DE EDICIÓN === -->
+    <div class="perfil-main-content">
+            <div class="perfil-form-card">
+                <div class="perfil-form-header">
+                    <h2 class="perfil-form-title">
+                        <i class="fas fa-edit"></i>
+                    Editar Información Personal
+                    </h2>
+            </div>
+                
+                <div class="perfil-form-body">
+                    <form method="post" enctype="multipart/form-data" id="perfil-form">
+                    {% csrf_token %}
+                    
+                        <!-- Información Básica -->
+                        <div class="perfil-section">
+                            <h3 class="perfil-section-title">
+                                <i class="fas fa-user"></i>
+                                Información Básica
+                            </h3>
+                            
+                            <div class="perfil-form-grid two-columns">
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ user_form.first_name.id_for_label }}">
+                                        {{ user_form.first_name.label }}
+                                    </label>
+                                    <input type="text" 
+                                           id="{{ user_form.first_name.id_for_label }}"
+                                           name="{{ user_form.first_name.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ user_form.first_name.value|default:'' }}"
+                                           placeholder="Ingrese su nombre">
+                        </div>
+                        
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ user_form.last_name.id_for_label }}">
+                                        {{ user_form.last_name.label }}
+                                    </label>
+                                    <input type="text" 
+                                           id="{{ user_form.last_name.id_for_label }}"
+                                           name="{{ user_form.last_name.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ user_form.last_name.value|default:'' }}"
+                                           placeholder="Ingrese sus apellidos">
+                                </div>
+                        </div>
+                        
+                            <div class="perfil-form-grid single-column">
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ user_form.email.id_for_label }}">
+                                        {{ user_form.email.label }}
+                                    </label>
+                                    <input type="email" 
+                                           id="{{ user_form.email.id_for_label }}"
+                                           name="{{ user_form.email.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ user_form.email.value|default:'' }}"
+                                           placeholder="correo@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información Profesional -->
+                        <div class="perfil-section">
+                            <h3 class="perfil-section-title">
+                                <i class="fas fa-briefcase"></i>
+                                Información Profesional
+                            </h3>
+                            
+                            <div class="perfil-form-grid two-columns">
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ form.area.id_for_label }}">
+                                        {{ form.area.label }}
+                                    </label>
+                                    <select id="{{ form.area.id_for_label }}"
+                                            name="{{ form.area.name }}"
+                                            class="perfil-form-select">
+                                        {% for choice in form.area.field.choices %}
+                                            <option value="{{ choice.0 }}" 
+                                                    {% if choice.0 == form.area.value %}selected{% endif %}>
+                                                {{ choice.1 }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                        </div>
+                        
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ form.puesto.id_for_label }}">
+                                        {{ form.puesto.label }}
+                                    </label>
+                                    <input type="text" 
+                                           id="{{ form.puesto.id_for_label }}"
+                                           name="{{ form.puesto.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ form.puesto.value|default:'' }}"
+                                           placeholder="Ej: Administrador del Sistema">
+                                </div>
+                        </div>
+                        
+                            <div class="perfil-form-grid two-columns">
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ form.telefono.id_for_label }}">
+                                        {{ form.telefono.label }}
+                                    </label>
+                                    <input type="text" 
+                                           id="{{ form.telefono.id_for_label }}"
+                                           name="{{ form.telefono.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ form.telefono.value|default:'' }}"
+                                           placeholder="+52 555 123 4567">
+                        </div>
+                        
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ form.fecha_ingreso.id_for_label }}">
+                                        {{ form.fecha_ingreso.label }}
+                                    </label>
+                                    <input type="date" 
+                                           id="{{ form.fecha_ingreso.id_for_label }}"
+                                           name="{{ form.fecha_ingreso.name }}"
+                                           class="perfil-form-input"
+                                           value="{{ form.fecha_ingreso.value|date:'Y-m-d'|default:'' }}">
+                                </div>
+                        </div>
+                        
+                            <div class="perfil-form-grid single-column">
+                                <div class="perfil-form-group">
+                                    <label class="perfil-form-label" for="{{ form.foto_perfil.id_for_label }}">
+                                        {{ form.foto_perfil.label }}
+                                    </label>
+                                    <input type="file" 
+                                           id="{{ form.foto_perfil.id_for_label }}"
+                                           name="{{ form.foto_perfil.name }}"
+                                           class="perfil-file-input"
+                                           accept="image/*">
+                                    {% if object.foto_perfil %}
+                                        <div class="perfil-file-current">
+                                            <i class="fas fa-image" style="color: var(--att-blue);"></i>
+                                            <span>Archivo actual: {{ object.foto_perfil.name }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones de Acción -->
+                        <div class="perfil-section">
+                            <div class="perfil-form-grid two-columns">
+                                <button type="submit" class="perfil-btn-primary">
+                                    <i class="fas fa-save"></i>
+                            Guardar Cambios
+                        </button>
+                                <a href="{% url 'home' %}" class="perfil-btn-secondary">
+                                    <i class="fas fa-arrow-left"></i>
+                            Volver al Dashboard
+                        </a>
+                            </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation and enhancements
+        const form = document.getElementById('perfil-form');
+        const inputs = form.querySelectorAll('.perfil-form-input, .perfil-form-select');
+        const fileInput = document.querySelector('.perfil-file-input');
+        
+        // Add focus effects
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // File input enhancement
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name;
+                if (fileName) {
+                    // Add visual feedback for file selection
+                    this.style.borderColor = 'var(--success-color)';
+                    this.style.background = 'rgba(34, 197, 94, 0.1)';
+                    
+                    // Create or update file info
+                    let fileInfo = this.parentElement.querySelector('.perfil-file-selected');
+                    if (!fileInfo) {
+                        fileInfo = document.createElement('div');
+                        fileInfo.className = 'perfil-file-selected';
+                        fileInfo.style.cssText = `
+                            margin-top: 0.5rem;
+                            padding: 0.5rem;
+                            background: rgba(34, 197, 94, 0.1);
+                            border-radius: 8px;
+                            color: var(--success-color);
+                            font-size: 0.8rem;
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        `;
+                        this.parentElement.appendChild(fileInfo);
+                    }
+                    fileInfo.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>Nuevo archivo seleccionado: ${fileName}</span>
+                    `;
+                }
+            });
+        }
+        
+        // Form submission with loading state
+        form.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('.perfil-btn-primary');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i>
+                Guardando...
+            `;
+            submitBtn.disabled = true;
+            
+            // Reset after a delay (in case of validation errors)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+        
+        // Avatar hover effect
+        const avatar = document.querySelector('.perfil-avatar, .perfil-avatar-placeholder');
+        if (avatar) {
+            avatar.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1) rotate(5deg)';
+            });
+            
+            avatar.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        }
+        
+        // Stats cards animation on scroll
+        const statsCard = document.querySelector('.perfil-stats-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.style.opacity = '1';
+                }
+            });
+        });
+        
+        if (statsCard) {
+            observer.observe(statsCard);
+        }
+    });
+</script>
+{% endblock %} 

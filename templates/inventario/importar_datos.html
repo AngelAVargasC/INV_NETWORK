@@ -1,0 +1,1210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Importar Datos - AT&T Executive Portal{% endblock %}
+{% block page_title %}Importación Masiva de Datos{% endblock %}
+{% block breadcrumb %}Gestión PMO / Importar Datos{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === IMPORTACIÓN EJECUTIVA AT&T === */
+    .executive-import-container {
+        padding: 0;
+    }
+    
+    .executive-import-header {
+        background: linear-gradient(135deg, #009dff 0%, #009dff 50%, var(--att-primary) 100%);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-xl);
+        margin-bottom: var(--spacing-xl);
+        color: var(--att-white);
+        box-shadow: var(--shadow-executive);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .executive-import-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        transform: translate(50px, -50px);
+    }
+    
+    .import-header-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-xl);
+    }
+    
+    .header-info {
+        flex: 1;
+    }
+    
+    .import-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .import-title h1 {
+        font-size: var(--font-size-3xl);
+        font-weight: 700;
+        margin: 0;
+        color: var(--att-white);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .import-icon {
+        font-size: 2.5rem;
+        color: var(--att-white);
+        opacity: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    
+    .import-subtitle {
+        font-size: var(--font-size-lg);
+        color: var(--att-white);
+        opacity: 0.95;
+        margin-bottom: var(--spacing-sm);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .import-description {
+        font-size: var(--font-size-base);
+        color: var(--att-white);
+        opacity: 0.9;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: var(--spacing-md);
+    }
+    
+    .executive-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        transition: all var(--transition-normal);
+        border: 2px solid transparent;
+    }
+    
+    .executive-btn-white {
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--att-white);
+        border-color: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+    
+    .executive-btn-white:hover {
+        background: var(--att-white);
+        color: var(--att-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    /* === GRID PRINCIPAL === */
+    .import-main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-xl);
+        align-items: start;
+    }
+    
+    @media (max-width: 1200px) {
+        .import-main-grid {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+    }
+    
+    /* === FORMULARIO EJECUTIVO === */
+    .executive-form-card {
+        background: linear-gradient(135deg, var(--att-white) 0%, #f8fafe 100%);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-xl);
+        box-shadow: var(--shadow-executive);
+        border: 1px solid var(--att-gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .executive-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--att-gradient);
+    }
+    
+    .form-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 2px solid var(--att-gray-100);
+    }
+    
+    .form-card-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--att-gradient);
+        border-radius: var(--border-radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--att-white);
+        font-size: 1.25rem;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .form-card-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+    
+    /* === CAMPOS DE FORMULARIO EJECUTIVOS === */
+    .executive-form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .executive-label {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-weight: 600;
+        color: var(--att-gray-700);
+        margin-bottom: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    .executive-file-input {
+        position: relative;
+        overflow: hidden;
+        border: 2px dashed var(--att-primary);
+        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, rgba(0, 162, 255, 0.05) 0%, rgba(0, 162, 255, 0.1) 100%);
+        transition: all var(--transition-normal);
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .executive-file-input:hover {
+        border-color: var(--att-secondary);
+        background: linear-gradient(135deg, rgba(255, 114, 0, 0.05) 0%, rgba(255, 114, 0, 0.1) 100%);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .executive-file-input.drag-over {
+        border-color: var(--att-success);
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.1) 100%);
+    }
+    
+    .file-input-content {
+        text-align: center;
+        pointer-events: none;
+    }
+    
+    .file-upload-icon {
+        font-size: 2rem;
+        color: var(--att-primary);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .file-upload-text {
+        font-weight: 600;
+        color: var(--att-gray-700);
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .file-upload-hint {
+        font-size: var(--font-size-sm);
+        color: var(--att-gray-500);
+    }
+    
+    .file-input-hidden {
+        position: absolute;
+        left: -9999px;
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .file-selected {
+        margin-top: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: var(--att-gray-50);
+        border-radius: var(--border-radius-md);
+        border-left: 4px solid var(--att-success);
+    }
+    
+    .file-selected-content {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .file-selected-icon {
+        color: var(--att-success);
+    }
+    
+    .file-selected-name {
+        font-weight: 600;
+        color: var(--att-gray-700);
+        flex: 1;
+    }
+    
+    .file-selected-size {
+        font-size: var(--font-size-sm);
+        color: var(--att-gray-500);
+    }
+    
+    .executive-checkbox {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: var(--att-gray-50);
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--att-gray-200);
+        transition: all var(--transition-normal);
+    }
+    
+    .executive-checkbox:hover {
+        background: var(--att-gray-100);
+        border-color: var(--att-primary);
+    }
+    
+    .executive-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--att-primary);
+    }
+    
+    .executive-textarea {
+        width: 100%;
+        padding: var(--spacing-md);
+        border: 2px solid var(--att-gray-200);
+        border-radius: var(--border-radius-md);
+        background: var(--att-white);
+        font-family: inherit;
+        font-size: var(--font-size-base);
+        transition: all var(--transition-normal);
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .executive-textarea:focus {
+        outline: none;
+        border-color: var(--att-primary);
+        box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+    }
+    
+    .executive-submit-btn {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        border: none;
+        padding: var(--spacing-lg) var(--spacing-xl);
+        border-radius: var(--border-radius-lg);
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-soft);
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .executive-submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-strong);
+    }
+    
+    .executive-submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* === PANEL LATERAL === */
+    .executive-sidebar-panel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    
+    .executive-info-card {
+        background: linear-gradient(135deg, var(--att-white) 0%, #f8fafe 100%);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--att-gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .executive-info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--att-gradient);
+    }
+    
+    .info-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .info-card-icon {
+        width: 35px;
+        height: 35px;
+        background: var(--att-gradient);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--att-white);
+        font-size: 1rem;
+    }
+    
+    .info-card-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--att-gray-800);
+        margin: 0;
+    }
+    
+    /* === INSTRUCCIONES === */
+    .instructions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    @media (max-width: 768px) {
+        .instructions-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .instruction-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+    
+    .instruction-icon {
+        color: var(--att-primary);
+        font-size: 1.1rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    
+    .instruction-text {
+        font-size: var(--font-size-sm);
+        color: var(--att-gray-700);
+        line-height: 1.5;
+    }
+    
+    .instruction-text strong {
+        color: var(--att-gray-800);
+        font-weight: 600;
+    }
+    
+    /* === TABLA DE EJEMPLO === */
+    .example-table-container {
+        overflow-x: auto;
+        margin: var(--spacing-md) 0;
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .example-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--att-white);
+        font-size: var(--font-size-xs);
+    }
+    
+    .example-table th {
+        background: var(--att-gradient);
+        color: var(--att-white);
+        padding: var(--spacing-sm);
+        font-weight: 600;
+        text-align: left;
+        font-size: 0.7rem;
+    }
+    
+    .example-table td {
+        padding: var(--spacing-sm);
+        border-bottom: 1px solid var(--att-gray-100);
+        color: var(--att-gray-700);
+    }
+    
+    .example-table tr:nth-child(even) {
+        background: var(--att-gray-50);
+    }
+    
+    /* === BADGES === */
+    .status-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+        margin-top: var(--spacing-sm);
+    }
+    
+    .status-badge {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius-sm);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-badge.success { background: rgba(34, 197, 94, 0.1); color: var(--att-success); }
+    .status-badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--att-warning); }
+    .status-badge.info { background: rgba(14, 165, 233, 0.1); color: var(--att-info); }
+    .status-badge.primary { background: rgba(0, 162, 255, 0.1); color: var(--att-primary); }
+    .status-badge.secondary { background: rgba(117, 117, 117, 0.1); color: var(--att-gray-600); }
+    .status-badge.dark { background: rgba(33, 33, 33, 0.1); color: var(--att-gray-800); }
+    .status-badge.danger { background: rgba(239, 68, 68, 0.1); color: var(--att-error); }
+    
+    /* === HISTORIAL === */
+    .history-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: var(--att-gray-50);
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--spacing-sm);
+        transition: all var(--transition-normal);
+        border-left: 4px solid var(--att-gray-300);
+    }
+    
+    .history-item:hover {
+        background: var(--att-gray-100);
+        transform: translateX(4px);
+    }
+    
+    .history-item.success {
+        border-left-color: var(--att-success);
+    }
+    
+    .history-item.error {
+        border-left-color: var(--att-error);
+    }
+    
+    .history-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .history-icon.success {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--att-success);
+    }
+    
+    .history-icon.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--att-error);
+    }
+    
+    .history-content {
+        flex: 1;
+    }
+    
+    .history-date {
+        font-size: var(--font-size-xs);
+        color: var(--att-gray-500);
+        margin-bottom: 2px;
+    }
+    
+    .history-filename {
+        font-weight: 600;
+        color: var(--att-gray-800);
+        font-size: var(--font-size-sm);
+        margin-bottom: 2px;
+    }
+    
+    .history-details {
+        font-size: var(--font-size-xs);
+        color: var(--att-gray-600);
+    }
+    
+    .history-badge {
+        padding: 2px 8px;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.6rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .history-badge.success {
+        background: var(--att-success);
+        color: var(--att-white);
+    }
+    
+    .history-badge.error {
+        background: var(--att-error);
+        color: var(--att-white);
+    }
+    
+    /* === ALERTAS EJECUTIVAS === */
+    .executive-alert {
+        padding: var(--spacing-md);
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--spacing-md);
+        border-left: 4px solid;
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        backdrop-filter: blur(10px);
+    }
+    
+    .executive-alert.success {
+        background: rgba(34, 197, 94, 0.1);
+        border-left-color: var(--att-success);
+        color: var(--att-success);
+    }
+    
+    .executive-alert.error {
+        background: rgba(239, 68, 68, 0.1);
+        border-left-color: var(--att-error);
+        color: var(--att-error);
+    }
+    
+    .executive-alert.warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-left-color: var(--att-warning);
+        color: var(--att-warning);
+    }
+    
+    .executive-alert.info {
+        background: rgba(14, 165, 233, 0.1);
+        border-left-color: var(--att-info);
+        color: var(--att-info);
+    }
+    
+    /* === LOADING MODAL === */
+    .executive-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-normal);
+    }
+    
+    .executive-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .modal-content {
+        background: var(--att-white);
+        border-radius: var(--border-radius-xl);
+        padding: var(--spacing-xl);
+        text-align: center;
+        box-shadow: var(--shadow-executive);
+        transform: scale(0.9);
+        transition: all var(--transition-normal);
+    }
+    
+    .executive-modal.show .modal-content {
+        transform: scale(1);
+    }
+    
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--att-gray-200);
+        border-top: 4px solid var(--att-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto var(--spacing-lg);
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+        .import-header-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--spacing-lg);
+        }
+        
+        .header-actions {
+            flex-direction: column;
+        }
+        
+        .instructions-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .executive-file-input {
+            min-height: 100px;
+        }
+        
+        .example-table {
+            font-size: 0.7rem;
+        }
+        
+        .status-badges {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="executive-content">
+    <div class="executive-import-container">
+        <!-- Header Ejecutivo -->
+        <div class="executive-import-header">
+            <div class="import-header-content">
+                <div class="header-info">
+                    <div class="import-title">
+                        <div class="import-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h1>Sistema de Importación Masiva</h1>
+                    </div>
+                    <div class="import-subtitle">
+                        Procesamiento inteligente de datos PMO
+                    </div>
+                    <div class="import-description">
+                        Herramienta ejecutiva para la carga masiva de información de proyectos PMO con validación automática y procesamiento optimizado.
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="{% url 'inventario:dashboard' %}" class="executive-btn executive-btn-white">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'inventario:articulo_list' %}" class="executive-btn executive-btn-white">
+                        <i class="fas fa-database"></i>
+                        <span>Base de Datos</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid Principal -->
+        <div class="import-main-grid">
+            <!-- Formulario Principal -->
+            <div class="executive-form-card">
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h2 class="form-card-title">Cargar Archivo de Datos</h2>
+                </div>
+
+                <!-- Alertas -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="executive-alert {{ message.tags }}">
+                            <div class="alert-icon">
+                                {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-message">{{ message }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Formulario -->
+                <form method="post" enctype="multipart/form-data" id="importForm">
+                    {% csrf_token %}
+                    
+                    <!-- Campo de archivo -->
+                    <div class="executive-form-group">
+                        <label class="executive-label">
+                            <i class="fas fa-file-excel"></i>
+                            Seleccionar Archivo de Datos
+                        </label>
+                        <!-- Input file separado y oculto -->
+                        <input type="file" class="file-input-hidden" name="archivo" accept=".xlsx,.xls,.csv" id="fileInput" required style="display: none;">
+                        <div class="executive-file-input" id="fileDropArea">
+                            <div class="file-input-content">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="file-upload-text">
+                                    Arrastra tu archivo aquí o haz clic para seleccionar
+                                </div>
+                                <div class="file-upload-hint">
+                                    Formatos soportados: Excel (.xlsx, .xls) o CSV (.csv) • Máximo 100MB
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fileSelected" class="file-selected" style="display: none;">
+                            <div class="file-selected-content">
+                                <div class="file-selected-icon">
+                                    <i class="fas fa-file-check"></i>
+                                </div>
+                                <div class="file-selected-name" id="fileName"></div>
+                                <div class="file-selected-size" id="fileSize"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opciones -->
+                    <div class="executive-form-group">
+                        <label class="executive-label">
+                            <i class="fas fa-cogs"></i>
+                            Opciones de Importación
+                        </label>
+                        <div class="executive-checkbox">
+                            <input type="checkbox" name="sobrescribir_duplicados" id="sobrescribir">
+                            <label for="sobrescribir">
+                                <strong>Sobrescribir duplicados</strong><br>
+                                <small>Actualizar artículos existentes con nuevos datos del archivo</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="executive-form-group">
+                        <label class="executive-label" for="descripcion">
+                            <i class="fas fa-edit"></i>
+                            Descripción de la Importación (Opcional)
+                        </label>
+                        <textarea class="executive-textarea" name="descripcion" id="descripcion" placeholder="Describe el contenido de esta importación para futura referencia..."></textarea>
+                    </div>
+
+                    <!-- Botón de envío -->
+                    <button type="submit" class="executive-submit-btn" id="submitBtn">
+                        <i class="fas fa-upload"></i>
+                        <span>Procesar Importación</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Panel Lateral -->
+            <div class="executive-sidebar-panel">
+                <!-- Instrucciones -->
+                <div class="executive-info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3 class="info-card-title">Guía de Importación</h3>
+                    </div>
+                    
+                    <div class="instructions-grid">
+                        <div class="instruction-item">
+                            <div class="instruction-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <div class="instruction-text">
+                                <strong>Formatos:</strong> Excel (.xlsx, .xls) o CSV (.csv)
+                            </div>
+                        </div>
+                        
+                        <div class="instruction-item">
+                            <div class="instruction-icon">
+                                <i class="fas fa-columns"></i>
+                            </div>
+                            <div class="instruction-text">
+                                <strong>Columnas:</strong> Año, Artículo, Descripción, Proveedor, ID PMO
+                            </div>
+                        </div>
+                        
+                        <div class="instruction-item">
+                            <div class="instruction-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="instruction-text">
+                                <strong>Validación:</strong> Creación automática de categorías faltantes
+                            </div>
+                        </div>
+                        
+                        <div class="instruction-item">
+                            <div class="instruction-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="instruction-text">
+                                <strong>Seguridad:</strong> Validación de datos y tipos de archivo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ejemplo de datos -->
+                <div class="executive-info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon">
+                            <i class="fas fa-table"></i>
+                        </div>
+                        <h3 class="info-card-title">Ejemplo de Datos</h3>
+                    </div>
+                    
+                    <div class="example-table-container">
+                        <table class="example-table">
+                            <thead>
+                                <tr>
+                                    <th>Año</th>
+                                    <th>Artículo</th>
+                                    <th>ID PMO</th>
+                                    <th>Estatus</th>
+                                    <th>Fábrica</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Aging 2025</td>
+                                    <td>W.1013312</td>
+                                    <td>2024-CRIC-T&F-095</td>
+                                    <td>Instalado</td>
+                                    <td>Transporte</td>
+                                </tr>
+                                <tr>
+                                    <td>Aging 2025</td>
+                                    <td>X.2345678</td>
+                                    <td>2024-CRIC-RAN-073</td>
+                                    <td>Forecast</td>
+                                    <td>RAN</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <strong style="color: var(--att-gray-700); font-size: var(--font-size-sm);">Estados PMO válidos:</strong>
+                        <div class="status-badges">
+                            <span class="status-badge success">Instalado</span>
+                            <span class="status-badge warning">Pendiente</span>
+                            <span class="status-badge info">Forecast</span>
+                            <span class="status-badge primary">IT</span>
+                            <span class="status-badge secondary">En Proceso</span>
+                            <span class="status-badge dark">Aprobado</span>
+                            <span class="status-badge danger">Cancelado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial -->
+                <div class="executive-info-card">
+                    <div class="info-card-header">
+                        <div class="info-card-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="info-card-title">Historial Reciente</h3>
+                    </div>
+                    
+                    {% if importaciones_recientes %}
+                        {% for importacion in importaciones_recientes %}
+                        <div class="history-item {% if importacion.registros_fallidos == 0 %}success{% else %}error{% endif %}">
+                            <div class="history-icon {% if importacion.registros_fallidos == 0 %}success{% else %}error{% endif %}">
+                                {% if importacion.registros_fallidos == 0 %}
+                                    <i class="fas fa-check"></i>
+                                {% else %}
+                                    <i class="fas fa-times"></i>
+                                {% endif %}
+                            </div>
+                            <div class="history-content">
+                                <div class="history-date">{{ importacion.fecha_importacion|date:"d/m/Y H:i" }}</div>
+                                <div class="history-filename">{{ importacion.archivo_original }}</div>
+                                <div class="history-details">
+                                    {% if importacion.registros_fallidos == 0 %}
+                                        {{ importacion.registros_exitosos }} artículos procesados
+                                    {% else %}
+                                        {{ importacion.registros_fallidos }} errores de {{ importacion.total_registros }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="history-badge {% if importacion.registros_fallidos == 0 %}success{% else %}error{% endif %}">
+                                    {% if importacion.registros_fallidos == 0 %}Exitosa{% else %}Error{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--att-gray-500);">
+                            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: var(--spacing-sm); opacity: 0.5;"></i>
+                            <div>No hay importaciones recientes</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Carga -->
+<div class="executive-modal" id="loadingModal">
+    <div class="modal-content">
+        <div class="loading-spinner"></div>
+        <h3 style="color: var(--att-gray-800); margin-bottom: var(--spacing-sm);">Procesando Archivo</h3>
+        <p style="color: var(--att-gray-600); margin: 0;">Por favor espere mientras se importan los datos...</p>
+    </div>
+</div>
+
+<script>
+// === FUNCIONALIDAD EJECUTIVA DE IMPORTACIÓN ===
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    const fileDropArea = document.getElementById('fileDropArea');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const importForm = document.getElementById('importForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingModal = document.getElementById('loadingModal');
+    
+    // Variable para evitar eventos duplicados
+    let isProcessingFile = false;
+
+    // Drag & Drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileDropArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileDropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileDropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        fileDropArea.classList.add('drag-over');
+    }
+
+    function unhighlight(e) {
+        fileDropArea.classList.remove('drag-over');
+    }
+
+    fileDropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        if (isProcessingFile) return;
+        
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    }
+
+    // Click to select file - UNA SOLA VEZ
+    fileDropArea.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (isProcessingFile) {
+            return;
+        }
+        
+        fileInput.click();
+    });
+
+    // File input change - EVENTO ÚNICO
+    fileInput.addEventListener('change', function(e) {
+        if (isProcessingFile) return;
+        
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    }, { once: false });
+
+    function handleFileSelect(file) {
+        // Marcar como procesando para evitar duplicados
+        isProcessingFile = true;
+        
+        // Validar tipo de archivo
+        const allowedTypes = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'text/csv'
+        ];
+        
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
+            showAlert('error', 'Tipo de archivo no válido. Por favor seleccione un archivo Excel (.xlsx, .xls) o CSV (.csv).');
+            fileInput.value = '';
+            isProcessingFile = false;
+            return;
+        }
+        
+        // Validar tamaño (100MB)
+        if (file.size > 100 * 1024 * 1024) {
+            showAlert('error', 'El archivo es demasiado grande. El tamaño máximo permitido es 100MB.');
+            fileInput.value = '';
+            isProcessingFile = false;
+            return;
+        }
+
+        // Mostrar información del archivo
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileSelected.style.display = 'block';
+        
+        // Animar la aparición
+        fileSelected.style.opacity = '0';
+        fileSelected.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            fileSelected.style.transition = 'all 0.3s ease';
+            fileSelected.style.opacity = '1';
+            fileSelected.style.transform = 'translateY(0)';
+            
+            // Permitir nueva selección después de la animación
+            setTimeout(() => {
+                isProcessingFile = false;
+            }, 500);
+        }, 10);
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `executive-alert ${type}`;
+        alertDiv.innerHTML = `
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <div class="alert-message">${message}</div>
+            </div>
+        `;
+        
+        const form = document.querySelector('.executive-form-card');
+        form.insertBefore(alertDiv, form.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 300);
+            }
+        }, 5000);
+    }
+
+    // Form submission
+    importForm.addEventListener('submit', function(e) {
+        if (!fileInput.files.length) {
+            e.preventDefault();
+            showAlert('warning', 'Por favor seleccione un archivo para importar.');
+            return;
+        }
+        
+        // Mostrar modal de carga optimizado
+        loadingModal.classList.add('show');
+        
+        // Cambiar texto del modal para operaciones rápidas
+        const modalContent = loadingModal.querySelector('.modal-content');
+        modalContent.innerHTML = `
+            <div class="loading-spinner"></div>
+            <h3 style="color: var(--att-gray-800); margin-bottom: var(--spacing-sm);">⚡ Procesamiento Optimizado</h3>
+            <p style="color: var(--att-gray-600); margin: 0;">Importación rápida en progreso con bulk operations...</p>
+            <div style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--att-gray-500);">
+                💾 SQLite optimizado | 🚀 Lotes de 1000 registros | ⚡ Transacciones atómicas
+            </div>
+        `;
+        
+        // Deshabilitar el botón
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <div class="loading-spinner" style="width: 20px; height: 20px; margin: 0; border-width: 2px;"></div>
+            <span>Procesando Masivamente...</span>
+        `;
+    });
+
+    // Auto-dismiss alerts
+    document.querySelectorAll('.executive-alert').forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 300);
+        }, 8000);
+    });
+});
+</script>
+{% endblock %} 

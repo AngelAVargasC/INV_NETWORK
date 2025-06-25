@@ -1,0 +1,586 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Análisis de Inventario - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+/* === ESTILOS CORPORATIVOS AT&T === */
+:root {
+    --att-blue: #00a8cc;
+    --att-dark-blue: #0066cc;
+    --att-light-blue: #e6f7ff;
+    --att-orange: #ff6600;
+    --att-gray: #6c757d;
+    --att-light-gray: #f8f9fa;
+    --att-white: #ffffff;
+    --att-success: #28a745;
+    --att-warning: #ffc107;
+    --att-danger: #dc3545;
+}
+
+.analisis-dashboard {
+    padding: 2rem;
+    background: var(--att-light-gray);
+    min-height: 100vh;
+}
+
+.page-header {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--att-blue);
+}
+
+.page-header h1 {
+    color: var(--att-dark-blue);
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--att-gray);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 1.8rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--att-blue), var(--att-dark-blue));
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--att-white);
+    background: linear-gradient(135deg, var(--att-blue), var(--att-dark-blue));
+}
+
+.stat-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--att-dark-blue);
+    margin-bottom: 0.3rem;
+}
+
+.stat-label {
+    color: var(--att-gray);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.progress-container {
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--att-blue), var(--att-dark-blue));
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.recent-section {
+    background: var(--att-white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--att-dark-blue);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.processing-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--att-blue);
+    transition: all 0.3s ease;
+}
+
+.processing-item:hover {
+    background: var(--att-light-blue);
+    transform: translateX(3px);
+    border-left-color: var(--att-orange);
+}
+
+.processing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.processing-id {
+    font-weight: 600;
+    color: var(--att-dark-blue);
+    font-size: 1.05rem;
+}
+
+.processing-time {
+    color: var(--att-gray);
+    font-size: 0.9rem;
+}
+
+.estado-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.estado-completado {
+    background: #d4edda;
+    color: var(--att-success);
+    border: 1px solid #c3e6cb;
+}
+
+.estado-procesando {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.estado-error {
+    background: #f8d7da;
+    color: var(--att-danger);
+    border: 1px solid #f1b0b7;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-analisis {
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--att-blue), var(--att-dark-blue));
+    color: var(--att-white);
+    box-shadow: 0 4px 15px rgba(0, 168, 204, 0.3);
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 168, 204, 0.4);
+    color: var(--att-white);
+    text-decoration: none;
+}
+
+.btn-secondary-custom {
+    background: var(--att-white);
+    color: var(--att-dark-blue);
+    border: 2px solid var(--att-blue);
+}
+
+.btn-secondary-custom:hover {
+    background: var(--att-light-blue);
+    transform: translateY(-2px);
+    color: var(--att-dark-blue);
+    text-decoration: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--att-gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--att-blue);
+    opacity: 0.6;
+}
+
+.empty-state h4 {
+    color: var(--att-dark-blue);
+    margin-bottom: 1rem;
+}
+
+.processing-details {
+    margin-bottom: 1rem;
+}
+
+.processing-details small {
+    color: var(--att-gray);
+    font-size: 0.85rem;
+}
+
+.btn-group-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-sm-custom {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary-custom {
+    color: var(--att-blue);
+    border: 1px solid var(--att-blue);
+    background: transparent;
+}
+
+.btn-outline-primary-custom:hover {
+    background: var(--att-blue);
+    color: var(--att-white);
+    transform: translateY(-1px);
+}
+
+.btn-outline-success-custom {
+    color: var(--att-success);
+    border: 1px solid var(--att-success);
+    background: transparent;
+}
+
+.btn-outline-success-custom:hover {
+    background: var(--att-success);
+    color: var(--att-white);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .analisis-dashboard {
+        padding: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .processing-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.stat-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.stat-card:nth-child(1) { 
+    animation-delay: 0.1s; 
+}
+
+.stat-card:nth-child(2) { 
+    animation-delay: 0.2s; 
+}
+
+.stat-card:nth-child(3) { 
+    animation-delay: 0.3s; 
+}
+
+.stat-card:nth-child(4) { 
+    animation-delay: 0.4s; 
+}
+
+.recent-section {
+    animation: slideInFromLeft 0.6s ease forwards;
+    animation-delay: 0.5s;
+}
+
+.processing-item {
+    animation: fadeInUp 0.4s ease forwards;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analisis-dashboard">
+    <!-- Header Section -->
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-chart-line me-3"></i>
+            Análisis de Inventario
+        </h1>
+        <p>
+            Automatización de procesamiento de datos de inventario AT&T
+        </p>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        <!-- Total Procesamientos -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <span class="estado-badge estado-completado">Total</span>
+            </div>
+            <div class="stat-value">{{ total_procesamientos }}</div>
+            <div class="stat-label">Procesamientos Realizados</div>
+        </div>
+
+        <!-- Tasa de Éxito -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <span class="estado-badge estado-completado">{{ tasa_exito }}%</span>
+            </div>
+            <div class="stat-value">{{ procesamientos_exitosos }}</div>
+            <div class="stat-label">Procesamientos Exitosos</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ tasa_exito }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registros Procesados -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <span class="estado-badge estado-completado">Registros</span>
+            </div>
+            <div class="stat-value">{{ total_registros_procesados|floatformat:0 }}</div>
+            <div class="stat-label">Total de Registros</div>
+        </div>
+
+        <!-- En Proceso -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                {% if procesamientos_en_proceso > 0 %}
+                    <span class="estado-badge estado-procesando">Activo</span>
+                {% else %}
+                    <span class="estado-badge estado-completado">Inactivo</span>
+                {% endif %}
+            </div>
+            <div class="stat-value">{{ procesamientos_en_proceso }}</div>
+            <div class="stat-label">En Proceso</div>
+        </div>
+    </div>
+
+    <!-- Procesamientos Recientes -->
+    <div class="recent-section">
+        <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Procesamientos Recientes
+        </h2>
+        
+        {% if ultimos_procesamientos %}
+            {% for procesamiento in ultimos_procesamientos %}
+                <div class="processing-item">
+                    <div class="processing-header">
+                        <div>
+                            <span class="processing-id">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Procesamiento #{{ procesamiento.id }}
+                            </span>
+                            <span class="estado-badge estado-{{ procesamiento.estado }}">
+                                {{ procesamiento.get_estado_display }}
+                            </span>
+                        </div>
+                        <div class="processing-time">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ procesamiento.fecha_procesamiento|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    <div class="processing-details">
+                        <small>
+                            <i class="fas fa-file-excel me-1"></i>
+                            {{ procesamiento.archivo_aging|truncatechars:30 }}
+                            {% if procesamiento.total_registros_aging %}
+                                | {{ procesamiento.total_registros_aging }} registros
+                            {% endif %}
+                            {% if procesamiento.tiempo_procesamiento %}
+                                | {{ procesamiento.tiempo_procesamiento|floatformat:2 }}s
+                            {% endif %}
+                        </small>
+                    </div>
+                    
+                    <div class="btn-group-actions mt-2">
+                        <a href="{% url 'analisis:detalle_procesamiento' procesamiento.pk %}" 
+                           class="btn btn-sm-custom btn-outline-primary-custom">
+                            <i class="fas fa-eye me-1"></i>Ver Detalles
+                        </a>
+                        {% if procesamiento.estado == 'completado' %}
+                            <a href="{% url 'analisis:descargar_archivo' procesamiento.pk 'resultado' %}" 
+                               class="btn btn-sm-custom btn-outline-success-custom">
+                                <i class="fas fa-download me-1"></i>Descargar
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>No hay procesamientos recientes</h4>
+                <p>Inicia tu primer análisis de inventario subiendo los archivos necesarios.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{% url 'analisis:procesar_archivos' %}" class="btn-analisis btn-primary-custom">
+            <i class="fas fa-upload"></i>
+            Nuevo Procesamiento
+        </a>
+        
+        <a href="{% url 'analisis:historial' %}" class="btn-analisis btn-secondary-custom">
+            <i class="fas fa-history"></i>
+            Ver Historial Completo
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar datos en tiempo real si hay procesamientos en proceso
+    {% if procesamientos_en_proceso > 0 %}
+    function actualizarDashboard() {
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    }
+    
+    // Iniciar actualización
+    actualizarDashboard();
+    {% endif %}
+    
+    // Animar las barras de progreso
+    setTimeout(() => {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+    }, 1000);
+});
+</script>
+{% endblock %} 
