@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-32&jnej0n!4gnx7i3(fhc(pqp&dfghf=%y@2gp!66w7(5_+bj6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '10.150.153.31,localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -90,13 +90,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database - MySQL Configuration
+# ==============================================
+# CONFIGURACIÓN DE PRODUCCIÓN 
+# ==============================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'inventario_network_db'),
-        'USER': os.getenv('DB_USER', 'att_inventario'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'att_secure_2024'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'NAME': os.getenv('DB_NAME', 'inventario_network_db'),  # Mantener mismo nombre de BD
+        'USER': os.getenv('DB_USER', 'root'),                   # Usuario de servidor producción
+        'PASSWORD': os.getenv('DB_PASSWORD', 's3cr3t001'),      # Password de servidor producción  
+        'HOST': os.getenv('DB_HOST', '10.150.153.31'),          # Servidor de producción
         'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -107,6 +110,27 @@ DATABASES = {
         'CONN_HEALTH_CHECKS': True,
     }
 }
+
+# ==============================================
+# CONFIGURACIÓN LOCAL (comentada para producción)
+# ==============================================
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.getenv('DB_NAME', 'inventario_network_db'),
+#         'USER': os.getenv('DB_USER', 'att_inventario'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'att_secure_2024'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '3306'),
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#             'charset': 'utf8mb4',
+#             'autocommit': True,
+#         },
+#         'CONN_MAX_AGE': 60,  # Reutilizar conexiones
+#         'CONN_HEALTH_CHECKS': True,
+#     }
+# }
 
 # Backup SQLite configuration (comentada)
 # """
